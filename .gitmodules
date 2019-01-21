@@ -1,0 +1,6 @@
+[submodule "lib/capstone"]
+	path = lib/capstone
+	url = https://github.com/aquynh/capstone.git
+[submodule "lib/fmt"]
+	path = lib/fmt
+	url = https://github.com/fmtlib/fmt.git
