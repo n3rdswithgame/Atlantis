@@ -59,7 +59,7 @@ namespace Log {
 		//{3} file
 		//{4} line
 		//{5} func
-		fmt::print("[{0}:{1:.5f}]{2}", LevelToStr(e.lvl), duration_cast<fsec>(e.timestamp).count(), e.msg, e.file, e.line, e.func);
+		fmt::print("[{0}:{1:.5f}]{2}\n", LevelToStr(e.lvl), duration_cast<fsec>(e.timestamp).count(), e.msg, e.file, e.line, e.func);
 	}
 
 } //namespace Log

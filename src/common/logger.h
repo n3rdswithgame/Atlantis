@@ -64,7 +64,7 @@ namespace Log {
 } //namespace log
 
 #define MAKE_EVENT(lvl, msg, ...) \
-	::Log::LogEvent::Make(lvl, __FILE__, __LINE__, __func__, msg "\n" __VA_OPT__(,) __VA_ARGS__)
+	::Log::LogEvent::Make(lvl, __FILE__, __LINE__, __func__, msg __VA_OPT__(,) __VA_ARGS__)
 
 #define LOG_EVENT(lvl, msg, ...) \
 	::Log::Logger::get().log(MAKE_EVENT(lvl, msg, __VA_ARGS__))

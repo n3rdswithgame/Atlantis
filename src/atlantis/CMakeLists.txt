@@ -3,5 +3,5 @@ add_executable(atlantis
 )
 
 target_link_libraries(atlantis PUBLIC capstone)
-target_link_libraries(atlantis PUBLIC common)
+target_link_libraries(atlantis PUBLIC common core)
 target_link_libraries(atlantis PRIVATE project_warnings)

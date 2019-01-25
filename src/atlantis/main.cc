@@ -1,45 +1,10 @@
 #include "common/logger.h"
+#include "core/mem.h"
+#include <type_traits>
 
-
-int main(void)
+int main(int argc, char** argv)
 {
+	DEBUG("{}", std::is_trivially_destructible<mem::region>::value);
 
-	DEBUG("This is a test");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
-	FATAL("This is a {0}{2}{1}", "fatal", "test", " ");
     return 0;
 }

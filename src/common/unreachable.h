@@ -10,7 +10,7 @@ template<class T>
 T unreachable_impl(const char* file, unsigned int line, const char* func) {
 	std::cerr << "[Fatal Error] unreachable reached\n";
 	std::cerr << "\t in file " << file << ":" << line << "\n";
-	std::cerr << "\t in function" << func << std::endl;
+	std::cerr << "\t in function " << func << std::endl;
 	exit(-1);
 }
 #else
@@ -18,6 +18,8 @@ template<class T>
 T unreachable_impl(const char* file, unsigned int line, const char* func) {
 	return T{};
 }
+template<>
+void unreachable_impl<void>(const char* file, unsigned int line, const char* func) {}
 #endif //UNREACHABLE_IMPL
 
 #define UNREACHABLE(T)	unreachable_impl<T>(__FILE__, __LINE__, __func__)
