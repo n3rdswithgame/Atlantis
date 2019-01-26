@@ -46,8 +46,6 @@ namespace cpu {
 		}
 	}
 
-	using reg_t = u32;
-
 	using gpr_t = enum : reg_t {
 		r0,
 		r1,
@@ -117,25 +115,33 @@ namespace cpu {
 	};
 
 	constexpr gpr_t unbankReg(mode_t mode, gpr_t reg) {
+		std::array<gpr_t, r15+1> active_bank{};
 		switch(mode) {
 			case usr:
 			case sys:
-				return (gpr_t[]){r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13    , r14    , r15}[reg];
+				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13    , r14    , r15};
+				break;
 			case fiq:
-				return (gpr_t[]){r0, r1, r2, r3, r4, r5, r6, r7, r8_fiq, r9_fiq, r10_fiq, r11_fiq, r12_fiq, r13_fiq, r14_fiq, r15}[reg];
+				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8_fiq, r9_fiq, r10_fiq, r11_fiq, r12_fiq, r13_fiq, r14_fiq, r15};
+				break;
 			case svc:
-				return (gpr_t[]){r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_svc, r14_svc, r15}[reg];
+				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_svc, r14_svc, r15};
+				break;
 			case abt:
-				return (gpr_t[]){r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_abt, r14_abt, r15}[reg];
+				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_abt, r14_abt, r15};
+				break;
 			case irq:
-				return (gpr_t[]){r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_irq, r14_irq, r15}[reg];
+				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_irq, r14_irq, r15};
+				break;
 			case und:
-				return (gpr_t[]){r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_und, r14_und, r15}[reg];
+				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_und, r14_und, r15};
+				break;
 
 			default:
-				return UNREACHABLE(gpr_t);
-
+				active_bank = UNREACHABLE(decltype(active_bank));
 		}
+
+		return active_bank[reg];
 	}
 
 	constexpr const char* getRegName(gpr_t reg) {
@@ -200,5 +206,19 @@ namespace cpu {
 		}
 	};
 }
+
+namespace fmt {
+	//TODO: Figure out why gpr_t is formating like an int instead of using this formatter
+	template<>
+	struct formatter<cpu::gpr_t> {
+		template <typename ParseContext>
+		constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+		template <typename FormatContext>
+		auto format(const cpu::gpr_t &reg, FormatContext &ctx) {
+			return format_to(ctx.begin(), cpu::getRegName(reg));
+		}		
+	};
+}//namespace fmt
 
 #endif

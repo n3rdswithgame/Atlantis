@@ -9,6 +9,7 @@
 #include "common/types.h"
 #include "common/unreachable.h"
 
+#include <fmt/format.h>
 
 
 namespace mem{
@@ -43,10 +44,14 @@ namespace mem{
 		}
 
 		bool operator ()(addr_t addr, region r) {
-			return r.start < addr;
+			return addr < r.start;
 		}
 	};
 
+	enum error : s64 {
+		unmapped = -1,
+		unaligned = -2,
+	};
 	
 	enum class memop {
 		read,
@@ -58,14 +63,14 @@ namespace mem{
 
 	template<typename T>
 	struct memop_traits<T, memop::read> {
-		//T 	= read value
-		//s64 	= number of cycles / -1 for invalid read
-		using ret_val = std::tuple<T, s64>;
+		//reg_t 	= read value
+		//s64 		= number of cycles / -1 for invalid read
+		using ret_val = std::tuple<reg_t, s64>;
 	};
 
 	template<typename T>
 	struct memop_traits<T, memop::write> {
-		//s64	= number of cycles / -1 for invalid write
+		//s64		= number of cycles / -1 for invalid write
 		using ret_val = std::tuple<s64>;
 	};
 
@@ -75,7 +80,30 @@ namespace mem{
 	template<typename T>
 	using write_ret = typename memop_traits<T,memop::write>::ret_val;
 
-}
+}//namespace mem
 
 #define make_region(name, start, end, timing_byte, timing_hword, timing_word) ((::mem::region{name, start, end, {timing_byte, timing_hword, timing_word}, nullptr}))
+
+namespace fmt{
+	template<>
+	struct formatter<mem::memop> {
+		template <typename ParseContext>
+		constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+		template <typename FormatContext>
+		auto format(const mem::memop &op, FormatContext &ctx) {
+			switch(op) {
+			case mem::memop::read:
+				return format_to(ctx.begin(), "memop::read");
+
+			case mem::memop::write:
+				return format_to(ctx.begin(), "memop::write");
+
+			default:
+				return UNREACHABLE(decltype(format_to(ctx.begin(), "")));	
+			}
+		}
+	};
+}//namespace fmt
+
 #endif

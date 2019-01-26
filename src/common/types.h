@@ -15,7 +15,9 @@ using s32 = std:: int32_t;
 using u64 = std::uint64_t;
 using s64 = std:: int64_t;
 
-using addr_t = std::uint32_t;
+using addr_t = u32;
+using reg_t  = u32;
+
 
 template<typename T>
 using ptr = T*;

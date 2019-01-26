@@ -1,5 +1,7 @@
 #include "logger.h"
 
+#include <algorithm>
+
 #include "unreachable.h"
 
 namespace Log {
@@ -22,6 +24,11 @@ namespace Log {
 		}
 
 		#undef tostr
+	}
+
+	std::string StripPath(std::string file) {
+		size_t src = file.find("src/");
+		return file.substr(src+4);
 	}
 
 	LogEvent LogEvent::MakeImpl(Level lvl, std::string file, unsigned int line, std::string func,
@@ -59,7 +66,7 @@ namespace Log {
 		//{3} file
 		//{4} line
 		//{5} func
-		fmt::print("[{0}:{1:.5f}]{2}\n", LevelToStr(e.lvl), duration_cast<fsec>(e.timestamp).count(), e.msg, e.file, e.line, e.func);
+		fmt::print("[{0}:{1:.5f} in {3}:{5}:{4}]{2}\n", LevelToStr(e.lvl), duration_cast<fsec>(e.timestamp).count(), e.msg, StripPath(e.file), e.line, e.func);
 	}
 
 } //namespace Log

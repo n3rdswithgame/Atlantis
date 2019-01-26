@@ -1,10 +1,11 @@
 #include "mmu.h"
 
-#include "core/mem.h"
-
 #include "common/constexpr.h"
 #include "common/logger.h"
 
+#include "core/mem.h"
+
+#include <algorithm>
 #include <optional>
 #include <type_traits>
 #include <tuple>
@@ -34,6 +35,16 @@ std::array/*<mem::region>*/ memmap =
 
 	};
 
+	bool init() {
+		std::for_each(memmap.begin(), memmap.end(), [](mem::region& region) {
+			region.mem = new u8[region.end - region.start];
+		});
+	}
+
+	void term() {
+
+	}
+
 	constexpr std::optional<mem::region> addr_to_region(addr_t addr) {
 		auto it = cexpr::binary_find(memmap.begin(), memmap.end(), addr, mem::region_comparator{});
 		if(it != memmap.end())
@@ -42,33 +53,63 @@ std::array/*<mem::region>*/ memmap =
 	}
 
 
+	template<typename T>
+	constexpr bool check_alignment(addr_t addr) {
+		//an algned value is one whose alignment mask is 0
+		//with alignment mask being: 
+		//0b0 for byte, 0b1 for hword, 0b11 for word
+		if( addr_t alignment_mask = sizeof(T) - 1; //if-init for making the mask
+			addr & alignment_mask) 
+			return true;
+		else
+			return false;
+	}
+
+	template<typename T>
+	constexpr reg_t extend(T t) {
+		//TODO: implement
+		return static_cast<reg_t>(t);
+	}
+
 	template<typename T, mem::memop op>
 	typename ::mem::memop_traits<T,op>::ret_val memory_operation(addr_t addr, T write_val=0) {
-		//TODO check alignment of addr
-
-		std::optional<mem::region> region_opt = addr_to_region(addr);
 		typename ::mem::memop_traits<T,op>::ret_val ret;
 
+		if(check_alignment<T>(addr)) { //
+			WARNING("Attempt to {} {}-byte val from unaligned address {:x}", op, sizeof(T), addr);
+			std::get<s64>(ret) = mem::error::unaligned;
+			return ret;
+		}
+
+		std::optional<mem::region> region_opt = addr_to_region(addr);
+
 		if(!region_opt) {
-			//WARNING("Attempt to {} from unmapped address {:x}", op, addr);
-			std::get<s64>(ret) = -1;
+			WARNING("Attempt to {} from unmapped address {:x}", op, addr);
+			std::get<s64>(ret) = mem::error::unmapped;
 			return ret;
 		}
 
 		mem::region& region = *region_opt;
 
 		ptr<u8> backing = region.mem;
+		addr_t off = addr - region.start;
 
 		if constexpr(op == mem::memop::read) {
-			//TODO: actually do the read
+			//reusing write_val as a temporary to use an otherwise 
+			//unused paramater and silence the warning
+			write_val = 0; //probalby 0 anyway but just ensuring
+			for(addr_t i = sizeof(T) - 1; i >= 0 ; i--) {
+				write_val |= static_cast<T>(static_cast<reg_t>(backing[off + i]) << (8*i)); 
+			}
+			std::get<reg_t>(ret) = extend<T>(write_val);
+			return ret;
 		} else {
 			u8 tmp[sizeof(T)];
-			for(int i = 0; i < sizeof(T); i++) {
-				tmp[i] = write_val & 0xff;
-				write_val = write_val >> 8;
+			for(addr_t i = 0; i < sizeof(T); i++) {
+				tmp[i] = static_cast<u8>(write_val & 0xff);
+				write_val = static_cast<T>(write_val >> 8);
 			}
-			addr_t off = addr - region.start;
-			for(int i = 0; i < sizeof(T); i++) {
+			for(addr_t i = 0; i < sizeof(T); i++) {
 				backing[off + i] = tmp[i];
 			}
 
