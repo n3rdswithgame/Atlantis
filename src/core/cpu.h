@@ -46,7 +46,34 @@ namespace cpu {
 		}
 	}
 
-	using gpr_t = enum : reg_t {
+	enum class reg : u8 { //banked, what the programmer uses / what is encoded
+		r0,
+		r1,
+		r2,
+		r3,
+		r4,
+		r5,
+		r6,
+		r7,
+		r8,
+		r9,
+		r10,
+		r11,
+		r12,
+		r13,
+		r14,
+		r15,
+
+		reg_count,
+
+		fp = r11,
+		ip = r12, 
+		sp = r13,
+		lr = r14,
+		pc = r15,
+	};
+
+	using gpr_t = enum : reg_t { //unbanked, what is "physically in the silicon"
 		r0,
 		r1,
 		r2,
@@ -114,41 +141,40 @@ namespace cpu {
 		psr_count
 	};
 
-	constexpr gpr_t unbankReg(mode_t mode, gpr_t reg) {
-		std::array<gpr_t, r15+1> active_bank{};
-		switch(mode) {
-			case usr:
-			case sys:
-				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13    , r14    , r15};
-				break;
-			case fiq:
-				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8_fiq, r9_fiq, r10_fiq, r11_fiq, r12_fiq, r13_fiq, r14_fiq, r15};
-				break;
-			case svc:
-				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_svc, r14_svc, r15};
-				break;
-			case abt:
-				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_abt, r14_abt, r15};
-				break;
-			case irq:
-				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_irq, r14_irq, r15};
-				break;
-			case und:
-				active_bank = {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_und, r14_und, r15};
-				break;
+	constexpr gpr_t unbankReg(mode_t mode, reg reg) {
+		using register_bank_t = std::array<gpr_t, r15+1>;
 
-			default:
-				active_bank = UNREACHABLE(decltype(active_bank));
-		}
+		auto debanking_dispatch = [](mode_t m) -> register_bank_t {
+			switch(m) {
+				case usr:
+				case sys:
+					return {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13    , r14    , r15};
+				case fiq:
+					return {r0, r1, r2, r3, r4, r5, r6, r7, r8_fiq, r9_fiq, r10_fiq, r11_fiq, r12_fiq, r13_fiq, r14_fiq, r15};
+				case svc:
+					return {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_svc, r14_svc, r15};
+				case abt:
+					return {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_abt, r14_abt, r15};
+				case irq:
+					return {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_irq, r14_irq, r15};
+				case und:
+					return {r0, r1, r2, r3, r4, r5, r6, r7, r8    , r9    , r10    , r11    , r12    , r13_und, r14_und, r15};
+				case mode_count: break;
+			}
+			return UNREACHABLE(register_bank_t);
+		};
 
-		return active_bank[reg];
+		register_bank_t active_bank = debanking_dispatch(mode);
+
+		return active_bank[static_cast<size_t>(reg)];
 	}
 
 	constexpr const char* getRegName(gpr_t reg) {
 		#define toStr(x)					\
 		case x:								\
 			return #x
-
+		#define ignore(x)					\
+			case x: break;
 		switch(reg) {
 			toStr(r0);
 			toStr(r1);
@@ -187,10 +213,12 @@ namespace cpu {
 			toStr(r13_und);
 			toStr(r14_und);
 
-			default:
-				return UNREACHABLE(char*);
-		}
+			ignore(gpr_count)
 
+		}
+		return UNREACHABLE(char*);
+
+		#undef ignore
 		#undef toStr
 	}
 
@@ -201,7 +229,7 @@ namespace cpu {
 		mode_t current_mode = sys;
 		u64 cycle = 0;
 
-		reg_t& operator[](gpr_t r) {
+		reg_t& operator[](reg r) {
 			return gpr[unbankReg(current_mode, r)];
 		}
 	};
@@ -210,13 +238,44 @@ namespace cpu {
 namespace fmt {
 	//TODO: Figure out why gpr_t is formating like an int instead of using this formatter
 	template<>
-	struct formatter<cpu::gpr_t> {
+	struct formatter<cpu::reg> {
 		template <typename ParseContext>
 		constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
 
 		template <typename FormatContext>
-		auto format(const cpu::gpr_t &reg, FormatContext &ctx) {
-			return format_to(ctx.begin(), cpu::getRegName(reg));
+		auto format(const cpu::reg &reg, FormatContext &ctx) {
+
+			#define toStr(x)					\
+			case cpu::reg::x:					\
+				return  format_to(ctx.begin(), "reg::" #x)
+			#define ignore(x)					\
+				case cpu::reg::x: break
+
+			switch(reg) {
+				toStr(r0 );
+				toStr(r1 );
+				toStr(r2 );
+				toStr(r3 );
+				toStr(r4 );
+				toStr(r5 );
+				toStr(r6 );
+				toStr(r7 );
+				toStr(r8 );
+				toStr(r9 );
+				toStr(r10);
+				toStr(r11);
+				toStr(r12);
+				toStr(sp );
+				toStr(lr );
+				toStr(pc );
+
+				ignore(reg_count);
+			}
+
+			return UNREACHABLE(decltype(format_to(ctx.begin(), "")));
+
+			#undef toStr
+			#undef ignore
 		}		
 	};
 }//namespace fmt
