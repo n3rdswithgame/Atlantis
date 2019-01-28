@@ -24,6 +24,10 @@ namespace cpu {
 		mode_count
 	} mode_t;
 
+	//split the encoding between enum and constexpr function
+	//since encodings are not contigious, and this way
+	//switch statements on the mode can be a simple table
+
 	constexpr unsigned modeToBits(mode_t mode) {
 		switch(mode) {
 			case usr:
