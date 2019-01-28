@@ -4,27 +4,36 @@
 
 #include "unreachable.h"
 
-namespace Log {
+template<>
+struct fmt::formatter<Log::Level> {
+	
+	template <typename ParseContext>
+	constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
 
-	std::string LevelToStr(Level lvl) {
-		#define tostr(lvl)					\
-		case Level::lvl:					\
-			return #lvl
+	template <typename FormatContext>
+	auto format(const Log::Level &lvl, FormatContext &ctx) {
+			#define tostr(lvl)					\
+			case Log::Level::lvl:					\
+			return format_to(ctx.begin(), #lvl);
+		#define ignore(x)						\
+			case Log::Level::x: break;
 
-		switch(lvl) {
-			tostr(Debug);
-			tostr(Status);
-			tostr(Warning);
-			tostr(Error);
-			tostr(Critical);
-			tostr(Fatal);
+			switch(lvl) {
+				tostr(Debug);
+				tostr(Status);
+				tostr(Warning);
+				tostr(Error);
+				tostr(Critical);
+				tostr(Fatal);
 
-		default:
-			return UNREACHABLE(std::string);
-		}
-
+				ignore(Count);
+			}
 		#undef tostr
-	}
+			return UNREACHABLE(decltype(format_to(ctx.begin(), "")));	
+		}
+	};
+
+namespace Log {
 
 	std::string StripPath(std::string file) {
 		size_t src = file.find("src/");
@@ -66,7 +75,7 @@ namespace Log {
 		//{3} file
 		//{4} line
 		//{5} func
-		fmt::print("[{0}:{1:.5f} in {3}:{5}:{4}]{2}\n", LevelToStr(e.lvl), duration_cast<fsec>(e.timestamp).count(), e.msg, StripPath(e.file), e.line, e.func);
+		fmt::print("[{0}:{1:.5f} in {3}:{5}:{4}]{2}\n", e.lvl, duration_cast<fsec>(e.timestamp).count(), e.msg, StripPath(e.file), e.line, e.func);
 	}
 
 } //namespace Log

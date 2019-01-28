@@ -45,9 +45,9 @@ namespace cpu {
 			case und:
 				return 0b11011;
 			
-			default:
-				return UNREACHABLE(unsigned);
+			case mode_count: break;
 		}
+		return UNREACHABLE(unsigned);
 	}
 
 	enum class reg : u8 { //banked, what the programmer uses / what is encoded

@@ -122,10 +122,8 @@ namespace fmt{
 
 			case mem::memop::write:
 				return format_to(ctx.begin(), "memop::write");
-
-			default:
-				return UNREACHABLE(decltype(format_to(ctx.begin(), "")));	
 			}
+			return UNREACHABLE(decltype(format_to(ctx.begin(), "")));	
 		}
 	};
 }//namespace fmt
