@@ -22,6 +22,7 @@ add_library(project_warnings INTERFACE)
 if(MSVC)
     target_compile_options(project_warnings INTERFACE /W4)
 else()
+    #taken from https://github.com/lefticus/cppbestpractices
     target_compile_options(project_warnings
                          INTERFACE
                          -Wall
