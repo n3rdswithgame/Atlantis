@@ -2,6 +2,7 @@
 build/
 
 #ignore gba resources
+#definetly don't go to https://www.gbadev.org/docs.php
 res/
 
 #ignore bios

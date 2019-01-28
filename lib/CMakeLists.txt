@@ -43,3 +43,8 @@ add_subdirectory(catch2)
 #use target_link_libraries(foo Catch2::Catch2)
 #for more info refer to 
 #https://github.com/catchorg/Catch2/blob/master/docs/cmake-integration.md#installing-catch2-from-git-repository
+
+#########rang##########
+
+add_subdirectory(rang)
+#use target_link_libraries(foo PRIVATE rang)
