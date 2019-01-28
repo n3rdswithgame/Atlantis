@@ -26,24 +26,43 @@ namespace mem{
 			return UNREACHABLE(size_t);
 	}
 
-	struct region {
-		std::string_view name;
+	enum class region {
+		bios,
+		ewram,
+		iwram,
+		ioreg,
+		palette,
+		vram,
+		oam,
+		wait0,
+		wait1,
+		wait2,
+		sram,
+	};
+
+	struct region_t {
+		region reg;
 
 		addr_t start;
 		addr_t end;
 
 		std::array<s64, 3> timings; // 0 = byte, 1 = hword, 2 = word
 
+		//TODO: replace dumb pointer with a complex 
+		//backing type that knows when it is owning
+		//and when it is just aliasing
 		ptr<u8> mem;
+
+		//TODO: on_write handler
 
 	};
 
-	struct region_comparator {
-		bool operator ()(region r, addr_t addr) {
+	struct region_t_comparator {
+		bool operator ()(region_t r, addr_t addr) {
 			return r.start < addr;
 		}
 
-		bool operator ()(addr_t addr, region r) {
+		bool operator ()(addr_t addr, region_t r) {
 			return addr < r.start;
 		}
 	};
@@ -59,8 +78,13 @@ namespace mem{
 	};
 
 	template<typename T, memop op>
-	struct memop_traits {};
+	struct memop_traits {
+		//one of these will fail during template instantiation
+		static_assert(std::is_same<T, std::false_type>::value, "invalid memop");
+		static_assert(std::is_same<T, std::true_type>::value,  "invalid memop");
+	};
 
+	//TODO: replace tuples with actual structs
 	template<typename T>
 	struct memop_traits<T, memop::read> {
 		//reg_t 	= read value
@@ -82,7 +106,7 @@ namespace mem{
 
 }//namespace mem
 
-#define make_region(name, start, end, timing_byte, timing_hword, timing_word) ((::mem::region{name, start, end, {timing_byte, timing_hword, timing_word}, nullptr}))
+#define make_region(name, start, end, timing_byte, timing_hword, timing_word) ((::mem::region_t{name, start, end, {timing_byte, timing_hword, timing_word}, nullptr}))
 
 namespace fmt{
 	template<>
