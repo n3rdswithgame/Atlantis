@@ -22,14 +22,23 @@ namespace ast {
 	public:
 		dispatcher() = default;
 
-		bb& operator[](addr_t addr) {
+		tracker& get_tracker_by_start_raw(addr_t addr) {
+			return dispatch[addr];
+		}
+
+		tracker& get_tracker_by_start(addr_t addr) {
 			//using chrono::steady_clock;
 			//static steady_clock::time_point t_zero = steady_clock::now();
 
-			tracker& t = dispatch[addr];
+			tracker& t = get_tracker_by_start_raw;
 
 			//TODO: timesamp stuff to track hot/cold codepaths
 
+			return t.bb;
+		}
+
+		bb& operator[](addr_t addr) {
+			tracker& t = get_tracker_by_start(addr);
 			return t.bb;
 		}
 	};
