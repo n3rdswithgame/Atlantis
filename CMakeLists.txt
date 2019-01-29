@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(BUILD_DIR ${PROJECT_BINARY_DIR})
 set(LIB_DIR lib)
 set(BUILT_LIB ${BUILD_DIR}/${LIB_DIR})
+set(BUILD_TESTS ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIR})
 
@@ -52,5 +53,13 @@ else()
                          )
 endif()
 
-
 add_subdirectory(src)
+
+if(BUILD_TESTS)
+    add_library(testing INTERFACE)
+    add_compile_definitions(CATCH_CONFIG_FAST_COMPILE)
+    target_link_libraries(testing INTERFACE Catch2::Catch2)
+    target_link_libraries(testing INTERFACE Catch2::Catch2 common core) #just link everything
+    target_include_directories(testing INTERFACE src)
+    add_subdirectory(tests)
+endif()

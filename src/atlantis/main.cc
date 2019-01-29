@@ -15,9 +15,5 @@ int main(int argc, char** argv)
 {
 	parseArgs(argc, argv);
 
-	DEBUG("{}", std::is_trivially_destructible<mem::region_t>::value);
-
-	DEBUG("unbanking {} to {}", cpu::reg::r7, cpu::unbankReg(cpu::mode_t::usr, cpu::reg::r7));
-
     return 0;
 }

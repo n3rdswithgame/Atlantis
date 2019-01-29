@@ -7,6 +7,9 @@
 #include <array>
 #include <string>
 
+#include <fmt/format.h> //silence error on formatter if its not included
+
+
 #define BIT(x) (1U << unsigned(x))
 
 namespace cpu {
@@ -116,10 +119,6 @@ namespace cpu {
 		r14_und,
 
 		gpr_count,
-
-		sp = r13,
-		lr = r14,
-		pc = r15,
 	};
 
 	enum status_reg_masks : u32 {
