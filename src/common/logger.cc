@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "format.h"
 #include "unreachable.h"
 
 template<>
@@ -12,11 +13,11 @@ struct fmt::formatter<Log::Level> {
 
 	template <typename FormatContext>
 	auto format(const Log::Level &lvl, FormatContext &ctx) {
-			#define tostr(lvl)					\
+		#define tostr(lvl)					\
 			case Log::Level::lvl:					\
-			return format_to(ctx.begin(), #lvl);
+			return format_to(ctx.begin(), #lvl)
 		#define ignore(x)						\
-			case Log::Level::x: break;
+			case Log::Level::x: break
 
 			switch(lvl) {
 				tostr(Debug);
@@ -69,13 +70,20 @@ namespace Log {
 	void Logger::log(LogEvent e) {
 		using chrono::duration_cast;
 		using fsec = chrono::duration<float>;
-		//{0} level
-		//{1} timestamp
-		//{2} msg
-		//{3} file
-		//{4} line
-		//{5} func
-		fmt::print("[{0}:{1:.5f} in {3}:{5}:{4}]{2}\n", e.lvl, duration_cast<fsec>(e.timestamp).count(), e.msg, StripPath(e.file), e.line, e.func);
+		
+		{
+			format::logger_format_guard color(e.lvl);
+
+			//{0} level
+			//{1} timestamp
+			//{2} msg formated during the creation of the log event
+			//{3} file
+			//{4} line
+			//{5} func
+			fmt::print("[{0} {1:.5f} in {3}:{5}:{4}]{2}", e.lvl, duration_cast<fsec>(e.timestamp).count(), e.msg, StripPath(e.file), e.line, e.func);
+		}
+
+		std::cout<<'\n'; // fix the issue with background color bleeding into new lines
 	}
 
 } //namespace Log

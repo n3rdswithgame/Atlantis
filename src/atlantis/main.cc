@@ -2,6 +2,8 @@
 
 #include "core/cpu.h"
 #include "core/mem.h"
+
+#include <iostream>
 #include <type_traits>
 
 void parseArgs(int argc, char** argv) {
@@ -14,6 +16,26 @@ void parseArgs(int argc, char** argv) {
 int main(int argc, char** argv)
 {
 	parseArgs(argc, argv);
+
+	DEBUG("Color Test");
+	STATUS("Color Test");
+	WARNING("Color Test");
+	ERROR("Color Test");
+	CRITICAL("Color Test");
+	FATAL("Color Test");
+
+	DEBUG("Color Test");
+	STATUS("Color Test");
+	WARNING("Color Test");
+	ERROR("Color Test");
+	CRITICAL("Color Test");
+	FATAL("Color Test");
+
+	std::cout <<"This is some test text" << '\n';
+	std::cout <<"This is some test text";
+	std::cout <<"This is some test text" << '\n';
+	std::cout <<"This is some test text" << '\n';
+	std::cout <<"This is some test text" << '\n';
 
     return 0;
 }

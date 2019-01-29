@@ -1,4 +1,9 @@
 add_library(common STATIC
+	constexpr.h
+
+	format.h
+	format.cc
+
 	logger.h
 	logger.cc
 
@@ -7,9 +12,7 @@ add_library(common STATIC
 	types.h
 
 	unreachable.h
-
-	constexpr.h
 )
 
-target_link_libraries(common PUBLIC fmt)
+target_link_libraries(common PUBLIC fmt rang-format)
 target_link_libraries(common PRIVATE project_warnings)

@@ -30,6 +30,7 @@ namespace Log {
 	std::string LevelToString();
 
 	struct LogEvent{
+		//TODO: log to file
 
 		using timestamp_t = chrono::microseconds;
 

@@ -47,4 +47,6 @@ add_subdirectory(catch2)
 #########rang##########
 
 add_subdirectory(rang)
-#use target_link_libraries(foo PRIVATE rang)
+add_library(rang-format INTERFACE)
+target_include_directories(rang-format INTERFACE rang/include)
+#use target_link_libraries(foo PRIVATE rang-format)

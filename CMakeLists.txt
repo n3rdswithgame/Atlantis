@@ -59,7 +59,7 @@ if(BUILD_TESTS)
     add_library(testing INTERFACE)
     add_compile_definitions(CATCH_CONFIG_FAST_COMPILE)
     target_link_libraries(testing INTERFACE Catch2::Catch2)
-    target_link_libraries(testing INTERFACE Catch2::Catch2 common core) #just link everything
+    target_link_libraries(testing INTERFACE common core) #just link everything
     target_include_directories(testing INTERFACE src)
     add_subdirectory(tests)
 endif()
