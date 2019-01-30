@@ -7,7 +7,7 @@
 
 namespace arm {
 
-	 class isa_t {
+	enum class isa_t {
 		arm,
 		thumb,
 	};
@@ -73,8 +73,8 @@ namespace arm {
 		std::vector<operand_t>	operands;
 	};
 
-	using basic_block			= ast::basic_block<arm_ins_t>;
-	using basic_block_tracker	= ast::basic_block_tracker<arm_inst_t>;
+	using basic_block			= ast::basic_block<arm_ins_t, isa_t>;
+	using basic_block_tracker	= ast::basic_block_tracker<arm_inst_t, isa_t>;
 } //namespace arm
 
 #endif //ARM_H
