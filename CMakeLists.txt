@@ -53,11 +53,8 @@ else()
                          )
 endif()
 
-add_subdirectory(src)
-
-
-
 if(BUILD_TESTS)
+    enable_testing()
     add_library(testing INTERFACE)
     add_compile_definitions(CATCH_CONFIG_FAST_COMPILE)
     target_link_libraries(testing INTERFACE Catch2::Catch2)
