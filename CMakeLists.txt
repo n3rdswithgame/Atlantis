@@ -55,6 +55,8 @@ endif()
 
 add_subdirectory(src)
 
+
+
 if(BUILD_TESTS)
     add_library(testing INTERFACE)
     add_compile_definitions(CATCH_CONFIG_FAST_COMPILE)
@@ -63,3 +65,7 @@ if(BUILD_TESTS)
     target_include_directories(testing INTERFACE src)
     add_subdirectory(tests)
 endif()
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+add_subdirectory(src)
