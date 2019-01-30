@@ -4,15 +4,15 @@
 #include "ast.h"
 
 #include <chrono>
-#include <map>
+#include <unordered_map>
 
 #include "common/types.h"
 
 namespace ast {
 	template<class T, typename isa_t>
-	class dispatcher<T> {
-		using bb = basic_block<T, isa_t>;
-		using tracker = basic_block_tracker<T, isa_t>;
+	class dispatcher {
+		using bb = typename bb::bb_t<T, isa_t>;
+		using tracker = typename bb::tracker_t;//<T, isa_t>;
 
 		using dispatcher_type = std::unordered_map<addr_t, tracker>;
 

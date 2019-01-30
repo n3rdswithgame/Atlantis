@@ -7,6 +7,6 @@ namespace ast {
 		#define crpt (static_cast<CRTP*>(this))
 		
 	};
-};
+} //namespace ast
 
 #endif //LIFTER_H

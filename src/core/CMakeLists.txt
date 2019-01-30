@@ -1,4 +1,13 @@
 add_library(core STATIC
+
+	ast/ast.h
+	ast/basic_block.h
+	ast/dispatcher.h
+	ast/lifter.h
+
+	arm/arm.h
+	arm/arm.cc
+
 	cpu.h
 	cpu.cc
 
@@ -7,9 +16,8 @@ add_library(core STATIC
 
 	mem.h
 	mem.cc
-
-	ast/ast.h
 )
 
 target_link_libraries(core PUBLIC common)
+target_link_libraries(core PUBLIC capstone-static)
 target_link_libraries(core PRIVATE project_warnings)
