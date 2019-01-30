@@ -18,8 +18,13 @@ using s64 = std:: int64_t;
 using addr_t = u32;
 using reg_t  = u32;
 
-
 template<typename T>
 using ptr = T*;
+
+template<typename T>
+using non_owning_ptr = ptr<T>;
+
+template<typename T>
+using owning_ptr = ptr<T>;
 
 #endif
