@@ -92,7 +92,7 @@ std::array/*<mem::region_t>*/ memmap =
 
 		if(check_alignment<T>(addr)) { //
 			WARNING("Attempt to {} {}-byte val from unaligned address {:x}", op, sizeof(T), addr);
-			std::get<s64>(ret) = mem::error::unaligned;
+			ret.timing = mem::error::unaligned;
 			return ret;
 		}
 
@@ -100,7 +100,7 @@ std::array/*<mem::region_t>*/ memmap =
 
 		if(!region_opt) {
 			WARNING("Attempt to {} from unmapped address {:x}", op, addr);
-			std::get<s64>(ret) = mem::error::unmapped;
+			ret.timing = mem::error::unmapped;
 			return ret;
 		}
 
@@ -116,7 +116,7 @@ std::array/*<mem::region_t>*/ memmap =
 			for(addr_t i = sizeof(T) - 1; i >= 0 ; i--) {
 				write_val |= static_cast<T>(static_cast<reg_t>(backing[off + i]) << (8*i)); 
 			}
-			std::get<reg_t>(ret) = extend<T>(write_val);
+			ret.read_val = extend<T>(write_val);
 			return ret;
 		} else {
 			u8 tmp[sizeof(T)];
@@ -131,7 +131,7 @@ std::array/*<mem::region_t>*/ memmap =
 		}
 		
 		const size_t indx = mem::width_to_index<T>();
-		std::get<s64>(ret) = region.timings[indx];
+		ret.timing = region.timings[indx];
 
 		return ret;
 		

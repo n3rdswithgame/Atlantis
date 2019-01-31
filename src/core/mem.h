@@ -16,6 +16,9 @@ namespace mem{
 
 	template<typename T>
 	constexpr size_t width_to_index() {
+		//using std::is_same instead of sizeof
+		//to prevent the accidental usage of a
+		//struct instead of an integral type
 		if constexpr(std::is_same<T, u8>::value || std::is_same<T,s8>::value)
 			return 0;
 		else if constexpr(std::is_same<T,u16>::value || std::is_same<T,s16>::value)
@@ -84,18 +87,22 @@ namespace mem{
 		static_assert(std::is_same<T, std::true_type>::value,  "invalid memop");
 	};
 
-	//TODO: replace tuples with actual structs
 	template<typename T>
 	struct memop_traits<T, memop::read> {
 		//reg_t 	= read value
-		//s64 		= number of cycles / -1 for invalid read
-		using ret_val = std::tuple<reg_t, s64>;
+		//s64 		= number of cycles / one of the above mem::errors
+		struct ret_val {
+			reg_t read_val;
+			s64 timing;
+		};
 	};
 
 	template<typename T>
 	struct memop_traits<T, memop::write> {
-		//s64		= number of cycles / -1 for invalid write
-		using ret_val = std::tuple<s64>;
+		//s64		= number of cycles / one of the above mem::errors
+		struct ret_val {
+			s64 timing;
+		};
 	};
 
 	template<typename T>
