@@ -70,9 +70,22 @@ namespace arm {
 		b,
 	};
 
-	//TODO: not use variant
-	//TODO: support coprocessor registers
-	using operand_t = std::variant<s32, cpu::reg>;
+	//TODO: consider going back to variant
+	
+	enum class operand_type {
+		u_imm,				//unsigned immediate
+		s_imm,				//  signed immediate
+		gpr,				//general purpose reg
+		psr,				//program status reg
+		cpr,				//coprocessor reg
+		vpr,				//vector reg
+		address,			//address
+	};
+
+	struct operand_t {
+		operand_type	type;
+		reg_t			val;
+	};
 
 	struct arm_ins_t {
 		addr_t 					addr;
