@@ -13,7 +13,7 @@
 
 namespace arm {
 
-	enum class isa_t {
+	enum class isa {
 		arm,
 		thumb,
 	};
@@ -79,10 +79,10 @@ namespace arm {
 		std::vector<operand_t>	operands;
 	};
 
-	using basic_block			= ast::bb::bb_t<arm_ins_t, isa_t>;
-	using basic_block_tracker	= ast::bb::tracker_t<arm_ins_t, isa_t>;
+	using basic_block			= ast::bb::bb_t<arm_ins_t, isa>;
+	using basic_block_tracker	= ast::bb::tracker_t<arm_ins_t, isa>;
 
-	class Lifter : ast::Lifter<arm_ins_t, isa_t, Lifter> {
+	class Lifter : ast::Lifter<arm_ins_t, isa, Lifter> {
 		non_owning_ptr<mmu::mmu> mmu;
 		csh cap_arm;
 		csh cap_thumb;
@@ -94,8 +94,35 @@ namespace arm {
 		~Lifter();
 
 	private:
-		arm_ins_t fetch_impl(addr_t addr);
+		arm_ins_t fetch_impl(addr_t);
+		template<isa i>
+		arm_ins_t fetch_arch_impl(addr_t);
+		arm_ins_t fetch_arm_impl(addr_t);
+		arm_ins_t fetch_thumb_impl(addr_t);
 	};
 } //namespace arm
+
+namespace fmt {
+	template<>
+	struct formatter<arm::isa> {
+		template <typename ParseContext>
+		constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+		template <typename FormatContext>
+		auto format(const arm::isa &isa, FormatContext &ctx) {
+
+			switch(isa) {
+				case arm::isa::arm:
+					return format_to(ctx.begin(), "isa::arm");
+				case arm::isa::thumb:
+					return format_to(ctx.begin(), "isa::thumb");
+			}
+
+			return UNREACHABLE(decltype(format_to(ctx.begin(), "")));
+
+			#undef ignore
+		}		
+	};
+}//namespace fmt
 
 #endif //ARM_H

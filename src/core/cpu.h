@@ -239,7 +239,6 @@ namespace cpu {
 }
 
 namespace fmt {
-	//TODO: Figure out why gpr_t is formating like an int instead of using this formatter
 	template<>
 	struct formatter<cpu::reg> {
 		template <typename ParseContext>
