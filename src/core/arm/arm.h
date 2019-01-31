@@ -9,6 +9,8 @@
 #include "../cpu.h"
 #include "../mmu.h"
 
+#include <string_view>
+
 #include <capstone/capstone.h>
 
 namespace arm {
@@ -18,7 +20,7 @@ namespace arm {
 		thumb,
 	};
 
-	enum class cond_t : u8 {
+	enum class cond : u8 {
 		//taken straight form the ARM Archatecture Reference Manual
 
 							// meaning								flags
@@ -46,7 +48,7 @@ namespace arm {
 		LO = CC,
 	};
 
-	enum class mnemonics_t {
+	enum class mnemonics {
 		// basic instruction for now just so the enum
 		// isn't empty. Will add more once I get the 
 		// lifter working and can start testing 
@@ -74,8 +76,8 @@ namespace arm {
 
 	struct arm_ins_t {
 		addr_t 					addr;
-		cond_t 					cond;
-		mnemonics_t 			op;
+		arm::cond				cond;
+		mnemonics	 			op;
 		std::vector<operand_t>	operands;
 	};
 
@@ -96,9 +98,12 @@ namespace arm {
 	private:
 		arm_ins_t fetch_impl(addr_t);
 		template<isa i>
-		arm_ins_t fetch_arch_impl(addr_t);
-		arm_ins_t fetch_arm_impl(addr_t);
-		arm_ins_t fetch_thumb_impl(addr_t);
+		arm_ins_t fetchArch_impl(addr_t);
+		arm_ins_t fetchArm_impl(addr_t);
+		arm_ins_t fetchThumb_impl(addr_t);
+
+		void decodeArm(arm_ins_t&, std::string_view, std::string_view);
+		void decodeThumb(arm_ins_t&, std::string_view, std::string_view);
 	};
 } //namespace arm
 
