@@ -2,10 +2,12 @@
 #define MEM_H
 
 #include <array>
+#include <algorithm>
 #include <type_traits>
 #include <string_view>
 #include <tuple>
 
+#include "common/constexpr.h"
 #include "common/types.h"
 #include "common/unreachable.h"
 
@@ -29,7 +31,7 @@ namespace mem{
 			return UNREACHABLE(size_t);
 	}
 
-	enum class region {
+	enum class gba_region {
 		bios,
 		ewram,
 		iwram,
@@ -41,11 +43,11 @@ namespace mem{
 		wait1,
 		wait2,
 		sram,
+
+		count
 	};
 
 	struct region_t {
-		region reg;
-
 		addr_t start;
 		addr_t end;
 
@@ -54,18 +56,27 @@ namespace mem{
 		//TODO: replace dumb pointer with a complex 
 		//backing type that knows when it is owning
 		//and when it is just aliasing
-		ptr<u8> mem;
+		//OR: keep it so the mmu doesn't own the 
+		//memory and can stay constexpr and let 
+		//memory banker manage the memory
+		non_owning_ptr<u8> mem;
 
 		//TODO: on_write handler
 
 	};
 
-	struct region_t_comparator {
-		bool operator ()(region_t r, addr_t addr) {
+
+
+	template<typename Region>
+	using memmap = std::array<region_t, static_cast<size_t>(Region::count)>;
+
+	template<typename Region>
+	struct comparator {
+		bool operator ()(Region r, addr_t addr) {
 			return r.start < addr;
 		}
 
-		bool operator ()(addr_t addr, region_t r) {
+		bool operator ()(addr_t addr, Region r) {
 			return addr < r.start;
 		}
 	};
@@ -113,7 +124,8 @@ namespace mem{
 
 }//namespace mem
 
-#define make_region(name, start, end, timing_byte, timing_hword, timing_word) ((::mem::region_t{name, start, end, {timing_byte, timing_hword, timing_word}, nullptr}))
+#define make_region(name, start, end, timing_byte, timing_hword, timing_word) 					\
+	((::mem::region_t{name, start, end, {timing_byte, timing_hword, timing_word}, nullptr}))
 
 namespace fmt{
 	template<>
