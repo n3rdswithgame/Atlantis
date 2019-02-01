@@ -5,6 +5,11 @@
 
 namespace cexpr {
 
+	template< class T, class Compare >
+	constexpr T max( std::initializer_list<T> ilist, Compare comp ) {
+		std::max(ilist, comp);
+	}
+
 	//ripped from https://en.cppreference.com/w/cpp/algorithm/lower_bound and marked constexpr
 	template<class ForwardIt, class T, class Compare>
 	constexpr ForwardIt lower_bound(ForwardIt first, ForwardIt last, const T& value, Compare comp)
