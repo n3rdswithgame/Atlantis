@@ -3,11 +3,11 @@
 
 //handles ARM + Thumb even though its named just arm
 
-//TODO: figure out how to remove the "../" in these headers
+//TODO: figure out how to remove the "core/" in these headers
 
-#include "../ast/ast.h"
-#include "../cpu.h"
-#include "../mmu.h"
+#include "core/ast/ast.h"
+#include "core/cpu.h"
+#include "core/mmu.h"
 
 #include <string_view>
 

@@ -5,7 +5,7 @@
 
 #include "common/logger.h"
 
-#include "../mem.h"
+#include "core/mem.h"
 
 //TODO: write unit tests
 

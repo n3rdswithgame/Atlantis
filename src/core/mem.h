@@ -81,10 +81,28 @@ namespace mem{
 		}
 	};
 
-	enum error : s64 {
-		unmapped = -1,
-		unaligned = -2,
+#define BIT(n) (1 << n)
+	enum class error {
+		success = 0,
+		unmapped = BIT(1),
+		unaligned = BIT(2),
 	};
+#undef BIT
+
+	constexpr error operator|(error e1, error e2) {
+		return static_cast<error>(
+			static_cast<std::underlying_type<error>::type>(e1) | 
+			static_cast<std::underlying_type<error>::type>(e2)
+		);
+	}
+
+	constexpr error operator|=(error& e1, error e2) {
+		e1 = static_cast<error>(
+			static_cast<std::underlying_type<error>::type>(e1) | 
+			static_cast<std::underlying_type<error>::type>(e2)
+		);
+		return e1;
+	}
 	
 	enum class memop {
 		read,
@@ -94,25 +112,29 @@ namespace mem{
 	template<typename T, memop op>
 	struct memop_traits {
 		//one of these will fail during template instantiation
-		static_assert(std::is_same<T, std::false_type>::value, "invalid memop");
 		static_assert(std::is_same<T, std::true_type>::value,  "invalid memop");
+		static_assert(std::is_same<T, std::false_type>::value, "invalid memop");
 	};
 
 	template<typename T>
 	struct memop_traits<T, memop::read> {
 		//reg_t 	= read value
-		//s64 		= number of cycles / one of the above mem::errors
+		//s64 		= number of cycles 
+		//error 	= one of the above mem::errors
 		struct ret_val {
-			reg_t read_val;
-			s64 timing;
+			reg_t read_val = 0;
+			s64 timing = 0;
+			error status = error::success;
 		};
 	};
 
 	template<typename T>
 	struct memop_traits<T, memop::write> {
 		//s64		= number of cycles / one of the above mem::errors
+		//error 	= one of the above mem::errors
 		struct ret_val {
-			s64 timing;
+			s64 timing = 0;
+			error status = error::success;
 		};
 	};
 
@@ -125,7 +147,7 @@ namespace mem{
 }//namespace mem
 
 #define make_region(name, start, end, timing_byte, timing_hword, timing_word) 					\
-	((::mem::region_t{name, start, end, {timing_byte, timing_hword, timing_word}, nullptr}))
+	((::mem::region_t{start, end, {timing_byte, timing_hword, timing_word}, nullptr}))
 
 namespace fmt{
 	template<>

@@ -1,6 +1,7 @@
 #TODO make registering a test a macro
 
 add_executable(mmu_tests
+	mmu_access.cc
 	mmu_test.cc
 )
 

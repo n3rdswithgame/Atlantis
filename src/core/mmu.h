@@ -7,6 +7,8 @@
 #include <optional>
 
 
+#include "common/constexpr.h"
+#include "common/endian.h"
 #include "common/logger.h"
 #include "common/singleton.h"
 #include "common/types.h"
@@ -43,7 +45,9 @@ namespace mmu {
 
 	public:
 
-		constexpr mmu(mem::memmap<Region>& m) : memmap(m.begin(), m.end()) {}
+		constexpr mmu(mem::memmap<Region>& m) {
+			cexpr::copy(std::begin(m), std::end(m), std::begin(memmap));
+		}
 
 		template<typename T>
 		constexpr auto read (addr_t addr) -> typename mem::read_ret<T> {
@@ -68,22 +72,25 @@ namespace mmu {
 		-> typename ::mem::memop_traits<T,op>::ret_val
 		{
 			typename ::mem::memop_traits<T,op>::ret_val ret;
+			ret.status = mem::error::success;
 
+			//TODO: allow for unaligned access at this level and let a higher level keep / discard
+			//the unalighed access
 			if(check_alignment<T>(addr)) { //
 				WARNING("Attempt to {} {}-byte val from unaligned address {:x}", op, sizeof(T), addr);
-				ret.timing = mem::error::unaligned;
+				ret.status |= mem::error::unaligned;
 				return ret;
 			}
+			
+			std::optional<mem::region_t> region_opt = addr_to_region(addr);
 
-			std::optional<Region> region_opt = addr_to_region(addr);
-	
 			if(!region_opt) {
-				WARNING("Attempt to {} from unmapped address {:x}", op, addr);
-				ret.timing = mem::error::unmapped;
-			return ret;
+				WARNING("Attempt to {} to/from unmapped address {:x}", op, addr);
+				ret.status |= mem::error::unmapped;
+				return ret;
 			}
 	
-			Region& region = *region_opt;
+			mem::region_t& region = *region_opt;
 	
 			ptr<u8> backing = region.mem;
 			addr_t off = addr - region.start;
@@ -92,11 +99,10 @@ namespace mmu {
 				//reusing write_val as a temporary to use an otherwise 
 				//unused paramater and silence the warning
 				write_val = 0; //probalby 0 anyway but just ensuring
-				for(addr_t i = sizeof(T) - 1; i >= 0 ; i--) {
+				for(addr_t i = 0; i < sizeof(T) ; i++) {
 					write_val |= static_cast<T>(static_cast<reg_t>(backing[off + i]) << (8*i)); 
 				}
 				ret.read_val = extend<T>(write_val);
-				return ret;
 			} else {
 				u8 tmp[sizeof(T)];
 				for(addr_t i = 0; i < sizeof(T); i++) {
@@ -111,12 +117,14 @@ namespace mmu {
 		
 			const size_t indx = mem::width_to_index<T>();
 			ret.timing = region.timings[indx];
-	
 			return ret;
 		}
 
-		constexpr std::optional<Region> addr_to_region(addr_t addr) {
-			auto it = cexpr::binary_find(memmap.begin(), memmap.end(), addr, mem::comparator<Region>{});
+		constexpr std::optional<mem::region_t> addr_to_region(addr_t addr) {
+			auto contains_addr = [addr](mem::region_t r) {
+				return cexpr::clamp(addr, r.start, r.end) == addr;
+			};
+			auto it = cexpr::find_if(memmap.begin(), memmap.end(), contains_addr);
 			if(it != memmap.end())
 				return *it;
 			return std::nullopt;

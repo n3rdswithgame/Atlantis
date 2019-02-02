@@ -4,7 +4,7 @@
 #include <algorithm>
 
 #include "common/types.h"
-#include "../mem.h"
+#include "core/mem.h"
 
 namespace ast {
 	template<class ins_t, typename isa_t, class CRTP, class mmu_t>

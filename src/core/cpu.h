@@ -282,4 +282,6 @@ namespace fmt {
 	};
 }//namespace fmt
 
+#undef BIT
+
 #endif
