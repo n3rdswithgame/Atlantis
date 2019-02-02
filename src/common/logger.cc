@@ -37,8 +37,13 @@ struct fmt::formatter<Log::Level> {
 namespace Log {
 
 	std::string StripPath(std::string file) {
-		size_t src = file.find("src/");
-		return file.substr(src+4);
+		size_t folder = file.find("src/");
+		if(folder != std::string::npos)
+			return file.substr(folder+4);
+		folder = file.find("tests/");
+		if(folder != std::string::npos)
+			return file.substr(folder+6);
+		return file;
 	}
 
 	LogEvent LogEvent::MakeImpl(Level lvl, std::string file, unsigned int line, std::string func,
