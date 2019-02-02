@@ -21,3 +21,5 @@ add_library(core STATIC
 target_link_libraries(core PUBLIC common)
 target_link_libraries(core PUBLIC capstone-static)
 target_link_libraries(core PRIVATE project_warnings)
+
+target_include_directories(core PUBLIC core)

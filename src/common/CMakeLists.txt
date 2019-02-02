@@ -1,11 +1,13 @@
 add_library(common STATIC
 	constexpr.h
 
-	format.h
-	format.cc
+	endian.h
 
-	logger.h
+	format.cc
+	format.h
+
 	logger.cc
+	logger.h
 
 	singleton.h
 

@@ -13,6 +13,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIR})
 
 set(UNREACHABLE_IMPL ON)
 
+set(CMAKE_BUILD_TYPE Debug)
+
+#if(BUILD_TESTS)
+#    set(CMAKE_BUILD_TYPE RelWithDebInfo)
+#endif()
+
+include (TestBigEndian)
+TEST_BIG_ENDIAN(IS_BIG_ENDIAN)
+if(NOT IS_BIG_ENDIAN)
+    add_compile_definitions(IS_LITTLE_ENDIAN)
+endif()
+
 if(UNREACHABLE_IMPL)
     add_compile_definitions(UNREACHABLE_IMPL)
 endif()
@@ -20,6 +32,7 @@ endif()
 add_subdirectory(${LIB_DIR})
 
 add_library(project_warnings INTERFACE)
+target_include_directories(project_warnings INTERFACE src)
 if(MSVC)
     target_compile_options(project_warnings INTERFACE /W4)
 else()
@@ -55,12 +68,14 @@ endif()
 
 if(BUILD_TESTS)
     enable_testing()
+    #set(BUILD_TYPE_OLD CMAKE_BUILD_TYPE)
     add_library(testing INTERFACE)
     add_compile_definitions(CATCH_CONFIG_FAST_COMPILE)
     target_link_libraries(testing INTERFACE Catch2::Catch2)
     target_link_libraries(testing INTERFACE common core) #just link everything
-    target_include_directories(testing INTERFACE src)
+    target_link_libraries(testing INTERFACE project_warnings)
     add_subdirectory(tests)
+    #set(CMAKE_BUILD_TYPE BUILD_TYPE_OLD)
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
