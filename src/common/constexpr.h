@@ -3,14 +3,31 @@
 
 #include <algorithm>
 
+//unless otherwise marked, any implementation that isn't just a 
+//thunk for the normal std::[aglorithm] is ripped from cppreference
+//and marked as constexpr
+
 namespace cexpr {
+
+	template<typename T>
+	constexpr const T& clamp(const T& v, const T& a, const T& b) {
+		return std::clamp(v,a,b);
+	}
+
+	template<class InputIt, class OutputIt>
+	constexpr OutputIt copy(InputIt first, InputIt last, OutputIt d_first) {
+	    while (first != last) {
+	        *d_first++ = *first++;
+	    }
+	    return d_first;
+	}
 
 	template< class T, class Compare >
 	constexpr T max( std::initializer_list<T> ilist, Compare comp ) {
 		std::max(ilist, comp);
 	}
 
-	//ripped from https://en.cppreference.com/w/cpp/algorithm/lower_bound and marked constexpr
+	
 	template<class ForwardIt, class T, class Compare>
 	constexpr ForwardIt lower_bound(ForwardIt first, ForwardIt last, const T& value, Compare comp)
 	{
@@ -38,6 +55,17 @@ namespace cexpr {
 	{
 		first = std::lower_bound(first, last, value, comp);
 		return first != last && !comp(value, *first) ? first : last;
+	}
+
+	template<class InputIt, class UnaryPredicate>
+	constexpr InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
+	{
+	    for (; first != last; ++first) {
+	        if (p(*first)) {
+	            return first;
+	        }
+	    }
+	    return last;
 	}
 }
 
