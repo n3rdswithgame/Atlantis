@@ -27,16 +27,46 @@ constexpr mem::memmap<moc_arm> genMemMap() {
 
 TEST_CASE("Testing ARM Data Processing instructions", "[arm.DataProcessing]") {
 	mem::memmap<moc_arm> memmap = genMemMap();
-
 	mmu::mmu<moc_arm> mmu(memmap);
 
 	std::array<u8, const_4kb> backing {};
 	mem::region_t& r = mmu[moc_arm::data_processing];
 	r.mem = backing.data();
-	addr_t base = r.start;
 
-	SECTION("adc r1, r2") {
-		mmu.write<u32>()
+	addr_t base = r.start;
+	addr_t off = 0;
+
+	auto setup = [&](u32 inst) -> addr_t {
+		mmu.write<u32>(base + off, inst);
+		off += 4;
+		return base+off;
+	};
+
+	SECTION("adc") {
+		setup(0xe0a15003); // adc r5,r1,r3
+	}
+
+}
+
+TEST_CASE("Testing ARM Branching instructions", "[arm.Branching]") {
+	mem::memmap<moc_arm> memmap = genMemMap();
+	mmu::mmu<moc_arm> mmu(memmap);
+
+	std::array<u8, const_4kb> backing {};
+	mem::region_t& r = mmu[moc_arm::b];
+	r.mem = backing.data();
+
+	addr_t base = r.start;
+	addr_t off = 0;
+	
+	auto setup = [&](u32 inst) -> addr_t {
+		mmu.write<u32>(base + off, inst);
+		off += 4;
+		return base+off;
+	};
+
+	SECTION("b") {
+		setup(0xea00048b); // b 0x1234
 	}
 
 }
