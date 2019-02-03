@@ -34,19 +34,19 @@ namespace cpu {
 	constexpr unsigned modeToBits(mode_t mode) {
 		switch(mode) {
 			case usr:
-				return 0b10000;
+				return 0b10000; //0x10
 			case fiq:
-				return 0b10001;
+				return 0b10001; //0x11
 			case irq:
-				return 0b10010;
+				return 0b10010; //0x12
 			case svc:
-				return 0b10011;
+				return 0b10011; //0x13
 			case abt:
-				return 0b10111;
+				return 0b10111; //0x17
 			case sys:
-				return 0b11111;
+				return 0b11111; //0x1F
 			case und:
-				return 0b11011;
+				return 0b11011; //0x1B
 			
 			case mode_count: break;
 		}
@@ -122,10 +122,10 @@ namespace cpu {
 	};
 
 	enum status_reg_masks : u32 {
-		N 		= BIT(31),
-		Z 		= BIT(30),
-		C 		= BIT(29),
-		V 		= BIT(28),
+		N 		= BIT(31),   //Negative
+		Z 		= BIT(30),   //Zero
+		C 		= BIT(29),   //Carry
+		V 		= BIT(28),   //oVerflow
 
 		I 		= BIT(7),
 		F 		= BIT(6),
