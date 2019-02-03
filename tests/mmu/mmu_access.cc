@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+	#include <catch2/catch.hpp>
 
 #include "moc.h"
 
@@ -49,7 +49,6 @@ mem::memmap<moc_region> make_moc_memmap() {
 
 TEST_CASE("Testing valid mmu operations", "[valid_mmu]") {
 
-	
 	mem::memmap<moc_region> memmap = make_moc_memmap();
 	mmu::mmu<moc_region> mmu(memmap);
 
