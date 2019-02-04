@@ -32,8 +32,8 @@ constexpr std::array<addr_t, moc_region::count> start_addr = {
 		3 + 4*static_cast<s64>(moc_region::r)								/*word  timeing*/			\
 	)
 
-mem::memmap<moc_region> make_moc_memmap() {
-	mem::memmap<moc_region> memmap = {
+mem::map<moc_region> make_moc_memmap() {
+	mem::map<moc_region> memmap = {
 		make_moc_region(reg_1),
 		make_moc_region(reg_2),
 		make_moc_region(reg_3),
@@ -49,7 +49,7 @@ mem::memmap<moc_region> make_moc_memmap() {
 
 TEST_CASE("Testing valid mmu operations", "[valid_mmu]") {
 
-	mem::memmap<moc_region> memmap = make_moc_memmap();
+	mem::map<moc_region> memmap = make_moc_memmap();
 	mmu::mmu<moc_region> mmu(memmap);
 
 
@@ -140,7 +140,7 @@ TEST_CASE("Testing valid mmu operations", "[valid_mmu]") {
 
 TEST_CASE("Testing invalid mmu operations", "[invalid_mmu]") {
 	
-	mem::memmap<moc_region> memmap = make_moc_memmap();
+	mem::map<moc_region> memmap = make_moc_memmap();
 	mmu::mmu<moc_region> mmu(memmap);
 
 	SECTION("unaligned reads") {
@@ -211,7 +211,7 @@ TEST_CASE("Testing invalid mmu operations", "[invalid_mmu]") {
 
 
 TEST_CASE("Testing signed mmu operations", "[signed_mmu]") {
-	mem::memmap<moc_region> memmap = make_moc_memmap();
+	mem::map<moc_region> memmap = make_moc_memmap();
 	mmu::mmu<moc_region> mmu(memmap);
 
 	SECTION("singed reads unsigned writes [sruw]"){

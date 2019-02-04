@@ -10,9 +10,9 @@
 
 constexpr size_t const_4kb = 0x1000;
 
-constexpr mem::memmap<moc_arm> genMemMap() {
+constexpr mem::map<moc_arm> genMemMap() {
 
-	mem::memmap<moc_arm> memmap{};
+	mem::map<moc_arm> memmap{};
 
 	for(size_t i = 0; i < memmap.size(); i++) {
 		memmap[i].start = static_cast<addr_t>(i * const_4kb);
@@ -26,7 +26,7 @@ constexpr mem::memmap<moc_arm> genMemMap() {
 }
 
 TEST_CASE("Testing ARM Data Processing instructions", "[arm.DataProcessing]") {
-	mem::memmap<moc_arm> memmap = genMemMap();
+	mem::map<moc_arm> memmap = genMemMap();
 	mmu::mmu<moc_arm> mmu(memmap);
 
 	std::array<u8, const_4kb> backing {};
@@ -49,7 +49,7 @@ TEST_CASE("Testing ARM Data Processing instructions", "[arm.DataProcessing]") {
 }
 
 TEST_CASE("Testing ARM Branching instructions", "[arm.Branching]") {
-	mem::memmap<moc_arm> memmap = genMemMap();
+	mem::map<moc_arm> memmap = genMemMap();
 	mmu::mmu<moc_arm> mmu(memmap);
 
 	std::array<u8, const_4kb> backing {};

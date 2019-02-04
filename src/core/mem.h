@@ -68,7 +68,7 @@ namespace mem{
 
 
 	template<typename Region>
-	using memmap = std::array<region_t, static_cast<size_t>(Region::count)>;
+	using map = std::array<region_t, static_cast<size_t>(Region::count)>;
 
 	template<typename Region>
 	struct comparator {

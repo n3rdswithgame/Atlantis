@@ -41,11 +41,11 @@ namespace mmu {
 	template<typename Region>
 	class mmu {
 
-		mem::memmap<Region> memmap;
+		mem::map<Region> memmap;
 
 	public:
 
-		constexpr mmu(mem::memmap<Region>& m) {
+		constexpr mmu(mem::map<Region>& m) {
 			cexpr::copy(std::begin(m), std::end(m), std::begin(memmap));
 		}
 
