@@ -6,9 +6,10 @@ add_library(core STATIC
 	ast/lifter.h
 
 	arm/arm.h
-	arm/arm.cc
 	arm/cpu.h
 	arm/cpu.cc
+	arm/lifter.h
+	arm/lifter.cc
 
 	mmu.h
 	mmu.cc
