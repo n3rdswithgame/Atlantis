@@ -1,6 +1,5 @@
 #include "common/logger.h"
 
-#include "core/cpu.h"
 #include "core/mem.h"
 
 #include <iostream>

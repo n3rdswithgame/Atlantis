@@ -12,7 +12,7 @@
 
 #define BIT(x) (1U << unsigned(x))
 
-namespace cpu {
+namespace arm::cpu {
 
 	//typedef instead of a using to suppress a -Wsubobject-linkage warning on gcc and friends
 	typedef enum {
@@ -240,18 +240,18 @@ namespace cpu {
 
 namespace fmt {
 	template<>
-	struct formatter<cpu::reg> {
+	struct formatter<arm::cpu::reg> {
 		template <typename ParseContext>
 		constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
 
 		template <typename FormatContext>
-		auto format(const cpu::reg &reg, FormatContext &ctx) {
+		auto format(const arm::cpu::reg &reg, FormatContext &ctx) {
 
 			#define toStr(x)					\
-			case cpu::reg::x:					\
+			case arm::cpu::reg::x:					\
 				return  format_to(ctx.begin(), "reg::" #x)
 			#define ignore(x)					\
-				case cpu::reg::x: break
+				case arm::cpu::reg::x: break
 
 			switch(reg) {
 				toStr(r0 );

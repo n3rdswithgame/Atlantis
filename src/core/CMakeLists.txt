@@ -7,9 +7,8 @@ add_library(core STATIC
 
 	arm/arm.h
 	arm/arm.cc
-
-	cpu.h
-	cpu.cc
+	arm/cpu.h
+	arm/cpu.cc
 
 	mmu.h
 	mmu.cc

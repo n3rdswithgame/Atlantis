@@ -2,15 +2,15 @@
 
 #include <numeric>
 
-#include "../../src/core/cpu.h"
+#include "core/arm/cpu.h"
 
 TEST_CASE("Testing cpu register unbanking", "[unbanking]") {
 	
-	using cpu::reg;
-	using cpu::mode_t;
-	using cpu::gpr_t;
+	using arm::cpu::reg;
+	using arm::cpu::mode_t;
+	using arm::cpu::gpr_t;
 
-	cpu::state cpu;
+	arm::cpu::state cpu;
 	std::iota(cpu.gpr.begin(), cpu.gpr.end(), 0);
 
 
