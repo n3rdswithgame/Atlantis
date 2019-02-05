@@ -37,12 +37,18 @@ struct fmt::formatter<Log::Level> {
 namespace Log {
 
 	std::string StripPath(std::string file) {
-		size_t folder = file.find("src/");
+		size_t folder = file.find("./");
+		if(folder != std::string::npos)
+			return file.substr(folder + 2);
+
+		folder = file.find("src/");
 		if(folder != std::string::npos)
 			return file.substr(folder+4);
+		
 		folder = file.find("tests/");
 		if(folder != std::string::npos)
 			return file.substr(folder+6);
+		
 		return file;
 	}
 
@@ -85,7 +91,7 @@ namespace Log {
 			//{3} file
 			//{4} line
 			//{5} func
-			fmt::print("[{0} {1:.5f} in {3}:{5}:{4}]{2}", e.lvl, duration_cast<fsec>(e.timestamp).count(), e.msg, StripPath(e.file), e.line, e.func);
+			fmt::print("[{0} {1:.4f} in {3}:{5}:{4}]{2}", e.lvl, duration_cast<fsec>(e.timestamp).count(), e.msg, StripPath(e.file), e.line, e.func);
 		}
 
 		std::cout<<'\n'; // fix the issue with background color bleeding into new lines
