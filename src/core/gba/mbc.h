@@ -1,31 +1,21 @@
-#ifndef MBC_H
-#define MBC_H
+#ifndef GBA_MBC_H
+#define GBA_MBC_H
+
+#include "rom.h"
+
+#include "core/memproxy.h"
+
+#include "core/arm/arm.h"
+#include "core/arm/arm.h"
 
 namespace gba {
-
 	enum class mbc_type {
-		none,
+		ignore,
 	};
 
-	template<typename Rom, typename Mmu> 
-	class mbc {
-		Rom* rom
-		Mmu mmu;
+	//class mbc_cheats : mem::Proxy<gba::rom, /*mmu*/ , mbc_type {
+	//
+	//};
+} //namespace gba
 
-	public:
-
-		template<typename T>
-		auto read(addr_t addr) -> decltype(mmu.read<T>(addr)) {
-			return mmu.read<T>(addr);
-		}
-
-		template<typename T>
-		auto write(addr_t addr) -> decltype(mmu.write<T>(addr)) {
-			//TODO: implemnt cheats and onWrite hooks
-			return mmu.write<T>(addr);
-		}
-
-	};
-} //namespace mbc
-
-#endif //MBC_H
+#endif 
