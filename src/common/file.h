@@ -17,9 +17,10 @@ namespace file {
 			CRITICAL("Failed to open file: {}", fileName);
 			return {};
 		}
+		STATUS("Opened file: {}", fileName);
 
-		file.seekg(0, std::ios::end);
-		std::vector<u8> raw(static_cast<size_t>(file.tellg()));
+		file.seekg(0, std::ios::end);//seek to the end
+		std::vector<u8> raw(static_cast<size_t>(file.tellg()));//reserve raw with the needed size hold everything
 		file.seekg(0); //reset to beginning of file
 
 		file.read(reinterpret_cast<char*>(raw.data()), static_cast<std::streamoff>(raw.size()));
