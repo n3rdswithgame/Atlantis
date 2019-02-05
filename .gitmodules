@@ -13,6 +13,3 @@
 [submodule "lib/rang"]
 	path = lib/rang
 	url = https://github.com/agauniyal/rang.git
-[submodule "lib/clipp"]
-	path = lib/clipp
-	url = https://github.com/muellan/clipp.git
