@@ -51,6 +51,3 @@ add_library(rang-format INTERFACE)
 target_include_directories(rang-format INTERFACE rang/include)
 #use target_link_libraries(foo PRIVATE rang-format)
 
-########clipp##########
-add_library(clipp INTERFACE)
-target_include_directories(clipp INTERFACE clipp/include)
