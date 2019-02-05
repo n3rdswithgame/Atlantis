@@ -11,7 +11,7 @@
 #include "common/logger.h"
 
 #include "core/mem.h"
-#include "core/gba/rom.h"
+#include "core/gba/gba.h"
 
 
 std::optional<atlantis::cli_args> parseArgs(int argc, char** argv) {
@@ -55,7 +55,12 @@ int main(int argc, char** argv)
 
 	atlantis::cli_args& args = *cli_args;
 
-	gba::rom::rom rom(args.rom_name);
+	if(args.rom_name == "") {
+		FATAL("rom name was not passed");
+		return -1;
+	}
+
+	gba::gba gba(args.rom_name);
 
     return 0;
 }
