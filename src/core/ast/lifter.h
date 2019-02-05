@@ -6,13 +6,23 @@
 #include "common/types.h"
 #include "core/mem.h"
 
+
+//"Concept":
+
 namespace ast {
-	template<class ins_t, typename isa_t, class CRTP, class mmu_t>
+	template<class CRTP, class ins_type, typename isa_type, class mmu_type>
 	class Lifter {
 	#define crtp (static_cast<CRTP*>(this))
-		mmu_t* mmu;
+		mmu_type* mmu;
+
+
 
 	public:
+		
+		using ins_t = ins_type;
+		using isa_t = isa_type;
+		using mmu_t = mmu_type;
+
 		Lifter(mmu_t* m) : mmu(m) {}
 		Lifter(Lifter&& l) {
 			mmu = std::exchange(l.mmu, nullptr);

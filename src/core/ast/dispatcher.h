@@ -3,43 +3,74 @@
 
 #include "ast.h"
 
+#include <algorithm>
 #include <chrono>
 #include <unordered_map>
 
+#include "common/logger.h"
 #include "common/types.h"
 
+
 namespace ast {
-	template<class T, typename isa_t>
+	template<class ins_t, typename isa_t>
 	class dispatcher {
-		using bb = typename bb::bb_t<T, isa_t>;
-		using tracker = typename bb::tracker_t;//<T, isa_t>;
-
+	public:
+		using bb = typename ::ast::bb::bb_t<ins_t, isa_t>;
+		using tracker = typename ::ast::bb::tracker_t<ins_t, isa_t>;
+		
+	private:
 		using dispatcher_type = std::unordered_map<addr_t, tracker>;
-
-
 		dispatcher_type dispatch;
+		tracker dummy;//In the exceptional event that a tracker fails to alloc, retrun something that isn't dangling
 
 	public:
 		dispatcher() = default;
 
-		tracker& get_tracker_by_start_raw(addr_t addr) {
-			return dispatch[addr];
+		tracker& get_tracker_raw(addr_t addr) {
+
+			auto it = std::find_if(dispatch.begin(), dispatch.end(), [=](tracker t) {
+				return t.contains(addr);
+			});
+
+			if (it != dispatch.end()) {
+				return *it;
+			}
+
+			auto[inserted, succeded] =
+				dispatch.emplace_back(std::piecewise_construct, {addr}, {addr, addr});
+
+			if(!succeded) {
+				FATAL("Unable to create basic block starting at {:08x}. using dummy", addr);
+				return dummy;
+			}
+
+			return *inserted;
 		}
 
-		tracker& get_tracker_by_start(addr_t addr) {
+		tracker& get_tracker(addr_t addr) {
 			//using chrono::steady_clock;
 			//static steady_clock::time_point t_zero = steady_clock::now();
 
-			tracker& t = get_tracker_by_start_raw;
+			tracker& t = get_tracker_raw(addr);
 
 			//TODO: timesamp stuff to track hot/cold codepaths
 
-			return t.bb;
+			return t;
 		}
 
 		bb& operator[](addr_t addr) {
-			tracker& t = get_tracker_by_start(addr);
+			tracker& t = get_tracker(addr);
 			return t.bb;
+		}
+
+		void invalidate(addr_t addr) {
+			tracker& t = get_tracker_raw(addr);
+
+			t.ins.erase(
+				std::remove(t.ins.begin() + (addr - t.start), t.ins.end(),
+					[](ins_t){return true;})
+			);
+			t.end = addr;
 		}
 	};
 }

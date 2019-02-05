@@ -11,9 +11,9 @@ namespace arm {
 	void decodeThumb(arm_ins_t& ins, std::string_view mnemonic, std::string_view op);
 
 	template<typename Region>
-	class Lifter : ast::Lifter<arm_ins_t, isa, Lifter<Region>, mmu::mmu<Region>> {
+	class Lifter : ast::Lifter<Lifter<Region>, arm_ins_t, isa, mmu::mmu<Region>> {
 
-		using ast_Lifter = ast::Lifter<arm_ins_t, isa, Lifter<Region>, mmu::mmu<Region>>;
+		using ast_Lifter = ast::Lifter<Lifter<Region>, arm_ins_t, isa, mmu::mmu<Region>>;
 		
 		//TODO: Profile 2 different capstone instances
 		//vs 1 and switching the isa as needed
