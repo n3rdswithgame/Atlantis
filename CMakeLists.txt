@@ -53,7 +53,9 @@ else()
                                               # function
                          -Wpedantic # warn if non-standard C++ is used
                          -Wconversion # warn on type conversions that may lose data
-                         -Wsign-conversion # warn on sign conversions
+                            #removed cause of clipp
+                            #TODO: find another cli parser or fix warnings and pull
+                         #-Wsign-conversion # warn on sign conversions   
                          -Wmisleading-indentation # warn if identation implies blocks where blocks
                                                   # do not exist
                          -Wduplicated-cond # warn if if / else chain has duplicated conditions

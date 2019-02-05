@@ -5,6 +5,8 @@
 #include <iostream>
 #include <type_traits>
 
+#include <clipp.h>
+
 void parseArgs(int argc, char** argv) {
 	//TODO: implement later
 	//for now this is just to silence the unused argument
