@@ -7,3 +7,6 @@ res/
 
 #ignore bios
 bios/
+
+#ignore roms used for testing
+roms/
