@@ -5,7 +5,7 @@
 
 namespace atlantis {
 	struct cli_args {
-		std::string rom_name;
+		std::string rom_name = "";
 	};
 } //atlantis
 

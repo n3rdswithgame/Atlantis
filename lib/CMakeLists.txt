@@ -51,3 +51,7 @@ add_library(rang-format INTERFACE)
 target_include_directories(rang-format INTERFACE rang/include)
 #use target_link_libraries(foo PRIVATE rang-format)
 
+########clara##########
+#add_subdirectory(clara)
+add_library(clara INTERFACE)
+target_include_directories(clara INTERFACE clara/include)

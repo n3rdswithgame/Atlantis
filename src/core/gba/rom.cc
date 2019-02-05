@@ -1,10 +1,25 @@
 #include "rom.h"
 
-namespace gba {
+#include <string>
+#include <vector>
 
-	rom::rom(const std:vector<u8>& r) : raw(r) {
-		u8* ptr = raw.data();
-		//TODO: populate header;
+#include "common/file.h"
+#include "common/logger.h"
+
+
+namespace gba::rom {
+
+
+	rom::rom(const std::string& filename) : raw(file::readFrom(filename)){
+		populateHeader();
 	}
 
-}
+	rom::rom(const std::vector<u8>& r) : raw(r) {
+		populateHeader();
+	}
+
+	void rom::populateHeader() {
+		//TODO: implement
+	}
+
+} //namespace gba::rom

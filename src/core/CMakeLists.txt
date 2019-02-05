@@ -11,6 +11,12 @@ add_library(core STATIC
 	arm/lifter.h
 	arm/lifter.cc
 
+	gba/gba.h
+	gba/mbc.h
+	gba/memmap.h
+	gba/rom.h
+	gba/rom.cc
+
 	mmu.h
 	mmu.cc
 

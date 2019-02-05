@@ -13,3 +13,6 @@
 [submodule "lib/rang"]
 	path = lib/rang
 	url = https://github.com/agauniyal/rang.git
+[submodule "lib/clara"]
+	path = lib/clara
+	url = https://github.com/catchorg/Clara.git
