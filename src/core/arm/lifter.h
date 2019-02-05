@@ -3,6 +3,9 @@
 
 #include "arm.h"
 
+#include "core/ast/ast.h"
+
+
 namespace arm {
 	using basic_block			= ast::bb::bb_t<arm_ins_t, isa>;
 	using basic_block_tracker	= ast::bb::tracker_t<arm_ins_t, isa>;
