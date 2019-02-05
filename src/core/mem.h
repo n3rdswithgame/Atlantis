@@ -31,22 +31,6 @@ namespace mem{
 			return UNREACHABLE(size_t);
 	}
 
-	enum class gba_region {
-		bios,
-		ewram,
-		iwram,
-		ioreg,
-		palette,
-		vram,
-		oam,
-		wait0,
-		wait1,
-		wait2,
-		sram,
-
-		count
-	};
-
 	struct region_t {
 		addr_t start;
 		addr_t end;

@@ -15,14 +15,14 @@
 
 namespace mmu {
 
-	bool init();
-	void term();
+	//bool init();
+	//void term();
 
-	template<typename T>
-	mem::read_ret<T> read(addr_t);
+	//template<typename T>
+	//mem::read_ret<T> read(addr_t);
 
-	template<typename T>
-	mem::write_ret<T> write(addr_t, T);
+	//template<typename T>
+	//mem::write_ret<T> write(addr_t, T);
 
 	//auto readU8  = read<u8>;
 	//auto readS8  = read<s8>;
