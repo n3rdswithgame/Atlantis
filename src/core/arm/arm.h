@@ -5,6 +5,8 @@
 
 //TODO: figure out how to remove the "core/" in these headers
 
+#include "ins/ins.h"
+
 #include "core/mmu.h"
 
 #include <string_view>
@@ -18,33 +20,7 @@ namespace arm {
 		thumb,
 	};
 
-	enum class cond : u8 {
-		//taken straight form the ARM Archatecture Reference Manual
-
-							// meaning								flags
-
-		EQ = 0b0000, 		// Equal 								Z set
-		NE = 0b0001, 		// Not equal 							Z clear
-		CS = 0b0010, 		// Carry set/unsigned higher or same 	C set
-		CC = 0b0011, 		// Carry clear/unsigned lower 			C clear
-		MI = 0b0100, 		// Minus/negative 						N set
-		PL = 0b0101, 		// Plus/positive or zero 				N clear
-		VS = 0b0110, 		// Overflow 							V set
-		VC = 0b0111, 		// No overflow 							V clear
-		HI = 0b1000, 		// Unsigned higher 						C set and Z clear
-		LS = 0b1001, 		// Unsigned lower or same 				C clear or Z set
-		GE = 0b1010, 		// Signed greater than or equal 		N set and V set, or N clear and V clear (N == V)
-		LT = 0b1011, 		// Signed less than 					N set and V clear, or N clear and V set (N != V)
-		GT = 0b1100, 		// Signed greater than 					Z clear, and either N set and V set, or N clear and V clear (Z == 0,N == V)
-		LE = 0b1101, 		// Signed less than or equal 			Z set, or N set and V clear, or N clear and V set (Z == 1 or N != V)
-		AL = 0b1110, 		// Always (unconditional) -
-
-		// the invalid conditional is only used on instructions that can't be conditional,
-		// so in the lifter those will just be tagged as AL
-
-		HS = CS,
-		LO = CC,
-	};
+	using cond = ins::parts::cond;
 
 	enum class mnemonics {
 		// basic instruction for now just so the enum
