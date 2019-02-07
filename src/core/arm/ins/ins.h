@@ -195,9 +195,31 @@ namespace arm::ins {
 			link	= mask::bit<1, 24>::m,
 			ignore	= mask::bit<0, 24>::m,
 		};
+
+		enum class mem {
+			load 	= mask::bit<1, 20>::m,
+			store 	= mask::bit<0, 20>::m,
+		};
+
+		enum class priv_status {
+			curr_bank	= mask::bit<0, 22>::m,
+			user 	 	= mask::bit<1, 22>::m,
+		};
+
+		enum class write_back {
+			wb 		= mask::bit<1, 21>::m,
+			ignore	= mask::bit<0, 21>::m,
+		};
+
+		enum class bt_adressingmode {
+			da = mask::bit_range<0b00, 24, 23>::m,
+			ia = mask::bit_range<0b01, 24, 23>::m,
+			db = mask::bit_range<0b10, 24, 23>::m,
+			ib = mask::bit_range<0b11, 24, 23>::m,
+		};
 	}//namespace arm::ins::parts
 
-namespace types {
+	namespace types {
 
 		template<u32 Armv, typename Mask>
 		struct ArmInst : Mask {
@@ -409,24 +431,72 @@ namespace types {
 			{}
 		};
 
+		constexpr u32 BlockTransEnc(parts::bt_adressingmode am, parts::priv_status s, parts::write_back w, parts::mem l, cpu::reg rn) {
+			return C(am) | C(s) | C(l) | C(w) | BIT_PLACE(rn, 19, 16);
+		}
+
+		template<typename... Args>
+		constexpr u32 RegListEnc(Args... args) {
+			static_assert((std::is_same_v<Args, cpu::reg> && ...), "Reglist must inlcude only register");
+			return ((1 << static_cast<u32>(args)) | ...);
+		}
+
+		template<u32 Armv, parts::bt_adressingmode am, parts::priv_status s, parts::write_back w, parts::mem l>
+		struct BlockTransfer : ArmInst<Armv, mask::BlockTransfer> {
+			template<typename... Args>
+			BlockTransfer(cpu::reg rn, Args... args) : ArmInst<Armv, mask::BlockTransfer>( BlockTransEnc(am, s, w, l, rn) | ReglistEnc(args...))
+			{}
+		};
+
+		//template for all of the ldm instructions
+		template<u32 Armv, parts::bt_adressingmode am, parts::priv_status s, parts::write_back w>
+		using Ldmr = BlockTransfer<Armv, am, s, w, parts::mem::load>;
+
+		//template for all of the stm instructions
+		template<u32 Armv, parts::bt_adressingmode am, parts::priv_status s, parts::write_back w>
+		using Stmr = BlockTransfer<Armv, am, s, w, parts::mem::store>;
+
 	} //namespace arm::ins::types
 
 	#define glue(x,y) x##y
-	#define DEF_INST(ins, ...)											\
-	using ins = types::Conditional< __VA_ARGS__ , parts::cond::al>;		\
-	template<parts::cond cond>											\
-	using glue(ins,_cond) = types::Conditional< __VA_ARGS__ , cond>
+	//define ins and ins_cond<cond>
+	#define DEF_INST(ins, ...)																					\
+		using ins = types::Conditional< __VA_ARGS__ , parts::cond::al>;											\
+		template<parts::cond cond>																				\
+		using glue(ins,_cond) = types::Conditional< __VA_ARGS__ , cond>
 
-	#define DP__INST(i)																		\
-		DEF_INST(i, types::DataProcessing<1, parts::dp::i, parts::status::ignore>);				\
+
+	//define ins(_cond<cond>) and insS(_cond<cond>)
+	#define DP__INST(i)																							\
+		DEF_INST(i, types::DataProcessing<1, parts::dp::i, parts::status::ignore>);								\
 		DEF_INST(i ## S, types::DataProcessing<1, parts::dp::i, parts::status::update>)
+
+
+	#define BDT(ins, base, Armv, btam, priv)																	\
+		template<parts::write_back w>																			\
+		using ins = types::Conditional< base< Armv, btam, priv, w>, parts::cond::al>;							\
+		template<parts::write_back w, parts::cond cond>															\
+		using ins ## _cond = types::Conditional< base< Armv, btam, priv, w>, cond>
+
+		
+	#define BDT_INST(i, base)																					\
+		BDT(i, 				base, 1, parts::bt_adressingmode::ia, parts::priv_status::curr_bank);				\
+		BDT(i ## da, 		base, 1, parts::bt_adressingmode::da, parts::priv_status::curr_bank);				\
+		BDT(i ## ia, 		base, 1, parts::bt_adressingmode::ia, parts::priv_status::curr_bank);				\
+		BDT(i ## db, 		base, 1, parts::bt_adressingmode::db, parts::priv_status::curr_bank);				\
+		BDT(i ## ib, 		base, 1, parts::bt_adressingmode::ib, parts::priv_status::curr_bank);				\
+		BDT(i ## _priv	, 	base, 1, parts::bt_adressingmode::ia, parts::priv_status::user);					\
+		BDT(i ## da_priv, 	base, 1, parts::bt_adressingmode::da, parts::priv_status::user);					\
+		BDT(i ## ia_priv, 	base, 1, parts::bt_adressingmode::ia, parts::priv_status::user);					\
+		BDT(i ## db_priv, 	base, 1, parts::bt_adressingmode::db, parts::priv_status::user);					\
+		BDT(i ## ib_priv, 	base, 1, parts::bt_adressingmode::ib, parts::priv_status::user)
+
+
 
 	DP__INST	(Adc);
 	DP__INST	(Add);
 	DP__INST	(And);
-	DEF_INST	(B,  types::BranchImm<1, parts::link::ignore>);
 	DP__INST	(Bic);
-	DEF_INST	(Bl, types::BranchImm<1, parts::link::link	>);
 	DP__INST	(Cmn);
 	DP__INST	(Cmp);
 	DP__INST	(Eor);
@@ -440,8 +510,13 @@ namespace types {
 	DP__INST	(Teq);
 	DP__INST	(Tst);
 
+	DEF_INST	(B,  types::BranchImm<1, parts::link::ignore>);
+	DEF_INST	(Bl, types::BranchImm<1, parts::link::link	>);
 
-	//16 down, ~130 to go
+	BDT_INST	(Ldm, types::Ldmr);
+	BDT_INST	(Stm, types::Stmr);
+
+	//20 down, 28 more for Armv4, 93 more for Armv6
 
 	#undef glue
 	#undef DEFDPINST
