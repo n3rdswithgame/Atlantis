@@ -40,15 +40,24 @@ namespace mask {
 		template<size_t b, size_t pos>
 		struct bit : mask<get_bit(b,pos), get_bit(~b, pos)> {};
 
+		constexpr size_t get_lower(size_t n) {
+			return static_cast<size_t>((1 << n) - 1);
+		}
+
+		template<size_t n>
+		struct lower : mask<get_lower(n), 0> {};
+
 		//end then begin as all of the arm docs show high bits on the left and low bits on right
 		//takes bits (high-low)...0 and maps them to high...low
 		constexpr size_t get_bit_range(size_t range, size_t high, size_t low) {
-			size_t mask = static_cast<size_t>(( 1<<(high-low + 1) )-1);
+			size_t mask = get_lower(high-low + 1);
 			return (range & mask ) << low;
 		}
 
 		template<size_t val, size_t end, size_t begin>
 		struct bit_range : mask<get_bit_range(val, end, begin), get_bit_range(~val, end, begin)> {};
+
+
 
 
 } //namespace mask
