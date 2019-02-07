@@ -315,12 +315,12 @@ namespace arm::ins {
 		//	}
 		//};
 	
-		constexpr u32 RdRmEnc(cpu::reg rd, cpu::reg rn) {
+		constexpr u32 RdRnEnc(cpu::reg rd, cpu::reg rn) {
 			return BIT_PLACE(rn, 19, 16) | BIT_PLACE(rd, 15, 12);
 		}
 	
 		constexpr u32 ImmShiftEnc(cpu::reg rd, cpu::reg rn, cpu::reg rm, parts::shift sh, u8 shift_imm) {
-			return RdRmEnc(rd,rn) | BIT_PLACE(shift_imm, 11, 7) | C(sh) | C(shift_imm) | BIT_PLACE(rm, 3, 0);
+			return RdRnEnc(rd,rn) | BIT_PLACE(shift_imm, 11, 7) | C(sh) | C(shift_imm) | BIT_PLACE(rm, 3, 0);
 		}
 	
 		template<u32 Armv, parts::dp op, parts::status s>
@@ -334,7 +334,7 @@ namespace arm::ins {
 		};
 		
 		constexpr u32 RegShiftEnc(cpu::reg rd, cpu::reg rn, cpu::reg rm, parts::shift sh, cpu::reg rs) {
-			return RdRmEnc(rd, rn) | BIT_PLACE(rs, 11, 8) | C(sh) | BIT_PLACE(rm, 3, 0);
+			return RdRnEnc(rd, rn) | BIT_PLACE(rs, 11, 8) | C(sh) | BIT_PLACE(rm, 3, 0);
 		}
 	
 		template<u32 Armv, parts::dp op, parts::status s>
@@ -358,7 +358,7 @@ namespace arm::ins {
 			{}
 	
 			constexpr DPImm(cpu::reg rd, cpu::reg rn, u8 rot, u8 imm) : 
-				ArmInst<Armv, mask::DPImm>(C(op) | C(s) | RotImmEnc(rot, imm))
+				ArmInst<Armv, mask::DPImm>(C(op) | C(s) | RdRnEnc(rd, rn) | RotImmEnc(rot, imm))
 			{}	
 		};
 	

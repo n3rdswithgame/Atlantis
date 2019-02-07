@@ -48,7 +48,7 @@ namespace mem {
 		}
 
 		void setMbcType(Banking_E e) const {
-			mbc_type;
+			mbc_type = e;
 		}
 
 		#undef crtp
