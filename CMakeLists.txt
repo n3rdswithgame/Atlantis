@@ -33,12 +33,13 @@ add_subdirectory(${LIB_DIR})
 
 add_library(project_warnings INTERFACE)
 target_include_directories(project_warnings INTERFACE src)
-if(MSVC)
-    target_compile_options(project_warnings INTERFACE /W4)
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    target_compile_options(project_warnings INTERFACE /W4 /WX)
 else()
-    #taken from https://github.com/lefticus/cppbestpractices
+    #modified from https://github.com/lefticus/cppbestpractices
     target_compile_options(project_warnings
                          INTERFACE
+
                          -Wall
                          -Wextra
                          -Wshadow # warn the user if a variable declaration shadows one from a
@@ -54,16 +55,24 @@ else()
                          -Wpedantic # warn if non-standard C++ is used
                          -Wconversion # warn on type conversions that may lose data
                          -Wsign-conversion # warn on sign conversions   
-                         -Wmisleading-indentation # warn if identation implies blocks where blocks
-                                                  # do not exist
-                         -Wduplicated-cond # warn if if / else chain has duplicated conditions
-                         -Wduplicated-branches # warn if if / else branches have duplicated code
-                         -Wlogical-op # warn about logical operations being used where bitwise were
-                                      # probably wanted
                          -Wnull-dereference # warn if a null dereference is detected
-                         -Wuseless-cast # warn if you perform a cast to the same type
                          -Wdouble-promotion # warn if float is implicit promoted to double
                          )
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
+        #these warnings are gcc only, clang doesn't support them
+        target_compile_options(project_warnings
+                                INTERFACE
+
+                                 -Wmisleading-indentation # warn if identation implies blocks where blocks
+                                                          # do not exist
+                                 -Wduplicated-cond # warn if if / else chain has duplicated conditions
+                                 -Wduplicated-branches # warn if if / else branches have duplicated code
+                                 -Wlogical-op # warn about logical operations being used where bitwise were
+                                              # probably wanted
+                                 -Wuseless-cast # warn if you perform a cast to the same type
+
+                                )
+    endif()
 endif()
 
 if(BUILD_TESTS)
