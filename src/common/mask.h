@@ -18,6 +18,10 @@ namespace mask {
 				return true;
 			}
 
+			constexpr static size_t apply(size_t val) {
+				return m & val;
+			}
+
 			constexpr static auto make_pair() -> std::pair<size_t, size_t> {
 				return std::make_pair(m, inv_m);
 			}
