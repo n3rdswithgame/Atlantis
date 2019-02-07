@@ -456,14 +456,18 @@ namespace arm::ins {
 		template<u32 Armv, parts::bt_adressingmode am, parts::priv_status s, parts::write_back w>
 		using Stmr = BlockTransfer<Armv, am, s, w, parts::mem::store>;
 
+		template<u32 Armv>
+		struct Svc : ArmInst<Armv, mask::SVC> {
+			Svc(u32 num) : ArmInst<Armv, mask::SVC>(mask::lower<24>::apply(num))
+			{}
+		};
 	} //namespace arm::ins::types
 
-	#define glue(x,y) x##y
 	//define ins and ins_cond<cond>
 	#define DEF_INST(ins, ...)																					\
 		using ins = types::Conditional< __VA_ARGS__ , parts::cond::al>;											\
 		template<parts::cond cond>																				\
-		using glue(ins,_cond) = types::Conditional< __VA_ARGS__ , cond>
+		using ins ##_cond = types::Conditional< __VA_ARGS__ , cond>
 
 
 	//define ins(_cond<cond>) and insS(_cond<cond>)
@@ -516,11 +520,14 @@ namespace arm::ins {
 	BDT_INST	(Ldm, types::Ldmr);
 	BDT_INST	(Stm, types::Stmr);
 
-	//20 down, 28 more for Armv4, 93 more for Armv6
+	DEF_INST	(Svc, types::Svc<1>);
+	//21 down, 27 more for Armv4, 93 more for Armv6
 
-	#undef glue
-	#undef DEFDPINST
-	#undef DEFINST
+	#undef BDT_INST
+	#undef BDT
+	#undef DP__INST
+	#undef DEF_INST
+
 } //namespace arm::ins
 
 #endif //ARM_INS_H
