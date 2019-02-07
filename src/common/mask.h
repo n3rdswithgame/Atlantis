@@ -33,12 +33,23 @@ namespace mask {
 		template<typename... masks>
 		struct combine : mask<combine_helper(masks::m...), combine_helper(masks::inv_m...)> {};
 
+		//specalize it for the one entry case to prevent a fallback into the variadic case aboce
+		//for hopefully better compiler speed, but also to preserve special properties that might be 
+		//in that one type, like the extract function for bit/bit_range/lower
+		template<typename mask>
+		struct combine<mask> : mask {};
+
 		constexpr size_t get_bit(size_t bit, size_t pos) {
 			return (bit & 1) << pos;
 		}
 
 		template<size_t b, size_t pos>
-		struct bit : mask<get_bit(b,pos), get_bit(~b, pos)> {};
+		struct bit : mask<get_bit(b,pos), get_bit(~b, pos)> {
+			constexpr static bool extract(size_t val) {
+				constexpr const mask<get_bit(b,pos), get_bit(~b, pos)> m;
+				return (val & m.m) == m.m;
+			}
+		};
 
 		constexpr size_t get_lower(size_t n) {
 			return static_cast<size_t>((1 << n) - 1);
@@ -55,7 +66,12 @@ namespace mask {
 		}
 
 		template<size_t val, size_t end, size_t begin>
-		struct bit_range : mask<get_bit_range(val, end, begin), get_bit_range(~val, end, begin)> {};
+		struct bit_range : mask<get_bit_range(val, end, begin), get_bit_range(~val, end, begin)> {
+			constexpr static size_t extract(size_t v) {
+				constexpr const mask<get_bit_range(val, end, begin), get_bit_range(~val, end, begin)> m;
+				return (v & (m.m | m.inv_m)) >> begin;
+			}
+		};
 
 
 
