@@ -15,4 +15,4 @@
 	url = https://github.com/agauniyal/rang.git
 [submodule "lib/clara"]
 	path = lib/clara
-	url = https://github.com/catchorg/Clara.git
+	url = https://github.com/n3rdswithgame/Clara.git
