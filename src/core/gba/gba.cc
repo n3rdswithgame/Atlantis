@@ -7,10 +7,10 @@ namespace gba {
 		mmu(::gba::mem::map),
 		rom(rom_name)
 	{
-		DEBUG("starting emulation");
+		STATUS("starting emulation");
 	}
 
 	gba::~gba() {
-		DEBUG("stopping emulation");
+		STATUS("stopping emulation");
 	}
 } //namespace gba
