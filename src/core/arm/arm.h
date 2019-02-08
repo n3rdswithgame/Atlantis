@@ -10,6 +10,7 @@
 #include "core/mmu.h"
 
 #include <string_view>
+#include <vector>
 
 #include <capstone/capstone.h>
 
