@@ -147,11 +147,11 @@ namespace arm::ins {
 		vc = mask::bit_range<0b0111, 31, 28>::m, // No overflow 						V clear
 		hi = mask::bit_range<0b1000, 31, 28>::m, // Unsigned higher 					C set and Z clear
 		ls = mask::bit_range<0b1001, 31, 28>::m, // Unsigned lower or same 				C clear or Z set
-		ge = mask::bit_range<0b1010, 31, 28>::m, // Signed greater than or equal 		N set and V set, or N clear and V clear (N == V)
-		lt = mask::bit_range<0b1011, 31, 28>::m, // Signed less than 					N set and V clear, or N clear and V set (N != V)
-		gt = mask::bit_range<0b1100, 31, 28>::m, // Signed greater than 				Z clear, and (N and V are both set or clear) (Z == 0,N == V)
-		le = mask::bit_range<0b1101, 31, 28>::m, // Signed less than or equal 			Z set, or N set and V clear, or N clear and V set (Z == 1 or N != V)
-		al = mask::bit_range<0b1110, 31, 28>::m, // Always (unconditional) 				-
+		ge = mask::bit_range<0b1010, 31, 28>::m, // Signed greater than or equal 		(N == V)
+		lt = mask::bit_range<0b1011, 31, 28>::m, // Signed less than 					(N != V)
+		gt = mask::bit_range<0b1100, 31, 28>::m, // Signed greater than 				(Z == 0,N == V)
+		le = mask::bit_range<0b1101, 31, 28>::m, // Signed less than or equal 			(Z == 1 or N != V)
+		al = mask::bit_range<0b1110, 31, 28>::m, // Always (unconditional) 				always
 
 		// the invalid conditional is only used on instructions that can't be conditional,
 		// so in the lifter those will just be tagged as AL
@@ -431,7 +431,9 @@ namespace arm::ins {
 			{}
 		};
 
-		constexpr u32 BlockTransEnc(parts::bt_adressingmode am, parts::priv_status s, parts::write_back w, parts::mem l, cpu::reg rn) {
+		constexpr u32 BlockTransEnc(parts::bt_adressingmode am, parts::priv_status s,
+			parts::write_back w, parts::mem l, cpu::reg rn)
+		{
 			return C(am) | C(s) | C(l) | C(w) | BIT_PLACE(rn, 19, 16);
 		}
 
@@ -444,7 +446,8 @@ namespace arm::ins {
 		template<u32 Armv, parts::bt_adressingmode am, parts::priv_status s, parts::write_back w, parts::mem l>
 		struct BlockTransfer : ArmInst<Armv, mask::BlockTransfer> {
 			template<typename... Args>
-			BlockTransfer(cpu::reg rn, Args... args) : ArmInst<Armv, mask::BlockTransfer>( BlockTransEnc(am, s, w, l, rn) | ReglistEnc(args...))
+			BlockTransfer(cpu::reg rn, Args... args) : 
+				ArmInst<Armv, mask::BlockTransfer>( BlockTransEnc(am, s, w, l, rn) | ReglistEnc(args...))
 			{}
 		};
 
