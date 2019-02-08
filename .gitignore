@@ -10,3 +10,6 @@ bios/
 
 #ignore roms used for testing
 roms/
+
+#SourceTrail
+SourceTrail/
