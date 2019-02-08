@@ -6,7 +6,7 @@
 
 namespace Log {
 	class Sink {
-		Level filter = Debug;
+		Level filter = Level::Debug;
 	protected:
 		bool passesFilter(Level f) {
 			return filter <= f;
