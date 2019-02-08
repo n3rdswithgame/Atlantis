@@ -14,10 +14,10 @@ namespace Log {
 		Count
 
 	};
-	bool operator<(Level lhs, Level rhs) {
+	constexpr bool operator<(Level lhs, Level rhs) {
 		return static_cast<unsigned>(lhs) <  static_cast<unsigned>(rhs);
 	}
-	bool operator<=(Level lhs, Level rhs) {
+	constexpr bool operator<=(Level lhs, Level rhs) {
 		return static_cast<unsigned>(lhs) <= static_cast<unsigned>(rhs);
 	}
 } //namespace Log
