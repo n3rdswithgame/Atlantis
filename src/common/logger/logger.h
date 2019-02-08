@@ -5,6 +5,7 @@
 #include "sink.h"
 
 #include "common/singleton.h"
+#include "common/types.h"
 
 #include <memory>
 #include <vector>
@@ -30,6 +31,7 @@ namespace Log {
 		sink_handle_t registerSink(Args&&...) {
 			//TODO: emplace back a unique prt after
 			//perfect forwarding the arguments
+			return nullptr;
 		}
 		void unregisterSink(sink_handle_t);
 		ptr<Log::Sink> getSink(sink_handle_t);
