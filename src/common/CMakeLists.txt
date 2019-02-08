@@ -3,11 +3,15 @@ add_library(common STATIC
 
 	endian.h
 
-	format.cc
-	format.h
 
-	logger.cc
 	logger.h
+	logger/event.h
+	logger/format.cc
+	logger/format.h
+	logger/level.h
+	logger/logger.h
+	logger/logger.cc
+	logger/sink.h
 
 	singleton.h
 

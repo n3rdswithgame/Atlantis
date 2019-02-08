@@ -1,7 +1,9 @@
 #ifndef FORMAT_H
 #define FORMAT_H
 
-#include "logger.h"
+namespace Log {
+	enum class Level;
+} //namespace Log
 
 namespace format {
 	class logger_format_guard {

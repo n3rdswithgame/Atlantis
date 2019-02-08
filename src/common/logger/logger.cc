@@ -3,7 +3,8 @@
 #include <algorithm>
 
 #include "format.h"
-#include "unreachable.h"
+
+#include "common/unreachable.h"
 
 template<>
 struct fmt::formatter<Log::Level> {
@@ -52,7 +53,7 @@ namespace Log {
 		return file;
 	}
 
-	LogEvent LogEvent::MakeImpl(Level lvl, std::string file, unsigned int line, std::string func,
+	Event Event::MakeImpl(Level lvl, std::string file, unsigned int line, std::string func,
 		std::string msg, const fmt::format_args& args)
 	{
 		using chrono::duration_cast;
@@ -60,7 +61,7 @@ namespace Log {
 
 		static steady_clock::time_point t_zero = steady_clock::now();
 
-		LogEvent event;
+		Event event;
 		event.timestamp = duration_cast<timestamp_t>(steady_clock::now() - t_zero);
 		event.lvl = lvl;
 		event.msg = fmt::vformat(msg, args);
@@ -78,7 +79,7 @@ namespace Log {
 	Logger::~Logger() {
 	}
 
-	void Logger::log(LogEvent e) {
+	void Logger::log(Event e) {
 		using chrono::duration_cast;
 		using fsec = chrono::duration<float>;
 		

@@ -1,10 +1,11 @@
 #include "format.h"
 
 #include <iostream>
-
 #include <rang.hpp>
 
-#include "unreachable.h"
+#include "level.h"
+
+#include "common/unreachable.h"
 
 namespace format {
 	logger_format_guard::logger_format_guard(Log::Level lvl) {
