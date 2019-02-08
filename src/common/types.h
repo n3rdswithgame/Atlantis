@@ -19,6 +19,12 @@ using addr_t = u32;
 using reg_t  = u32;
 
 template<typename T>
+using inout = T&;
+
+template<typename T>
+using out = T&;
+
+template<typename T>
 using ptr = T*;
 
 template<typename T>
