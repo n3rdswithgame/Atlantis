@@ -427,7 +427,7 @@ namespace arm::ins {
 
 		template<u32 Armv, parts::link l>
 		struct BranchImm : ArmInst<Armv, mask::BranchImm> {
-			constexpr BranchImm(s32 off) : ArmInst<Armv, mask::DPImmShift>(BImmEnc(off)) 
+			constexpr BranchImm(s32 off) : ArmInst<Armv, mask::BranchImm>(BImmEnc(off)) 
 			{}
 		};
 
