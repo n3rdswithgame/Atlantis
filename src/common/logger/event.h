@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <string>
+#include <string_view>
 
 #include <fmt/format.h>
 
@@ -26,15 +27,14 @@ namespace Log {
 		std::string func;
 
 		template <typename... Args>
-		static Event Make(
-			Level lvl, std::string file, unsigned int line, std::string func,
+		static Event Make(Level lvl, std::string file, unsigned int line, std::string func,
 			std::string msg, const Args&... args)
 		{
 			return MakeImpl(lvl, file, line, func, msg, fmt::make_format_args(args...));
 		}
 
-		static Event MakeImpl(Level lvl, std::string file, unsigned int line, std::string func,
-			std::string msg, const fmt::format_args& args);
+		static Event MakeImpl(Level lvl, const std::string& file, unsigned int line, const std::string& func,
+			const std::string& msg, const fmt::format_args& args);
 	};
 } //namespace LOG
 

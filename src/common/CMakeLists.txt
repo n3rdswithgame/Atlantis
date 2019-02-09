@@ -6,6 +6,7 @@ add_library(common STATIC
 
 	logger.h
 	logger/event.h
+	logger/event.cc
 	logger/format.cc
 	logger/format.h
 	logger/level.h

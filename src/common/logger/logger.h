@@ -8,6 +8,7 @@
 #include "common/types.h"
 
 #include <memory>
+#include <mutex>
 #include <vector>
 
 //TODO: flushing thread
