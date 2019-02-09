@@ -23,6 +23,7 @@ namespace Log {
 	Event Event::MakeImpl(Level lvl, const std::string& file, unsigned int line, const std::string& func,
 		const std::string& msg, const fmt::format_args& args)
 	{
+		//TODO: look into captuturing format args here and doing only 1 format on flushing
 		using chrono::duration_cast;
 		using chrono::steady_clock;
 

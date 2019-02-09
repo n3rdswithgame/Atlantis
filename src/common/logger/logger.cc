@@ -40,12 +40,14 @@ namespace Log {
 	void Logger::flush() {
 		std::vector<Log::Event> tmp;
 
+		//Prepare tmp to hold events when it is swapped
+		tmp.reserve(EVENT_THREASHOLD);
+
 		{
 			std::lock_guard guard(logger_lock);
 
-			//swap out events into a temporary vector, and then replace events with a shiny new vector
-			tmp = std::exchange(events, std::vector<Log::Event>{});
-			events.reserve(EVENT_THREASHOLD);
+			//tmp was init as the new events vector, and now swap them
+			tmp.swap(events);
 		}
 
 		//if there are no sinks don't bother looping over the events
