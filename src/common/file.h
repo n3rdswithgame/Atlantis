@@ -21,10 +21,11 @@ namespace file {
 
 		file.seekg(0, std::ios::end);//seek to the end
 		std::vector<u8> raw(static_cast<size_t>(file.tellg()));//reserve raw with the needed size hold everything
+		DEBUG("File size is {} kb", file.tellg() / 1024);
 		file.seekg(0); //reset to beginning of file
 
 		file.read(reinterpret_cast<char*>(raw.data()), static_cast<std::streamoff>(raw.size()));
-
+		DEBUG("File read is over");
 		return raw;
 	}
 }
