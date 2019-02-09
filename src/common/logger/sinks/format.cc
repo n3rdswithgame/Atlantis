@@ -1,13 +1,15 @@
 #include "format.h"
 
-#include <iostream>
+#include <iosfwd>
+
+#include <fmt/format.h>
 #include <rang.hpp>
 
-#include "level.h"
+#include "common/logger/level.h"
 
 #include "common/unreachable.h"
 
-namespace format {
+namespace Log::format {
 	logger_format_guard::logger_format_guard(Log::Level lvl) {
 		using namespace rang;
 
@@ -51,4 +53,7 @@ namespace format {
 		using namespace rang;
 		std::cout << fg::reset  << bg::reset << style::reset;
 	}
+
+
+
 } //namespace format

@@ -7,12 +7,14 @@ add_library(common STATIC
 	logger.h
 	logger/event.h
 	logger/event.cc
-	logger/format.cc
-	logger/format.h
 	logger/level.h
 	logger/logger.h
 	logger/logger.cc
 	logger/sink.h
+	logger/sinks/format.h
+	logger/sinks/format.cc
+	logger/sinks/console.h
+	logger/sinks/console.cc
 
 	singleton.h
 
