@@ -68,7 +68,7 @@ namespace arm {
 				"\tmne: {}", mnemonic, op_str, mne);
 			std::exit(-1);
 
-			return {};
+			//return {};
 		};
 
 		auto operandParser = [&](std::string_view opstr) -> std::vector<operand_t> {
@@ -77,7 +77,7 @@ namespace arm {
 				"\t{}",
 				opstr);
 			std::exit(-1);
-			return {};
+			//return {};
 		};
 
 		auto [mne, condition] = conditionalStripper(mnemonic);
@@ -86,11 +86,12 @@ namespace arm {
 		ins.operands = operandParser(op_str);
 	}
 	void decodeThumb(arm_ins_t& ins, std::string_view mnemonic, std::string_view op_str) {
+		ins.cond = arm::cond::al; //Not until ARMv6 thumb got the IT instruction (and therefore got conditional inst)
+
 		FATAL("Lifter::decodeThumb is unimplemented so cannout parse \n"
 			"\t{}\t{}",
 			mnemonic, op_str);
 		std::exit(-1);
-		ins.cond = arm::cond::al; //Not until ARMv6 thumb got the IT instruction (and therefore got conditional inst)
 	}
 
 } //namespace arm
