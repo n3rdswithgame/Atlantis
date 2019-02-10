@@ -4,6 +4,7 @@
 #include "common/logger.h"
 #include "common/types.h"
 
+#include <array>
 #include <string>
 #include <vector>
 
