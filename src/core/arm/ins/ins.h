@@ -15,11 +15,12 @@ namespace arm::ins {
 		#define MASK(x,n)				(C(x) & C((1 << (n))-1))
 		#define BIT_PLACE(x,e,b)		(MASK(x, e-b+1) << b)
 		
-		//alias all of the masking tools into here
-		//otherwise everything would have to be prefixed
-		//with "::mask", and this nested namespace is devoted
-		//to just masks so having the mask tools in here is not actually a problem
-		using namespace ::mask;
+		//using namespace ::bit::mask stopped working for some reason
+		//TODO: figure out why using namespace stopped working
+		using ::bit::mask::combine;
+		using ::bit::mask::bit;
+		using ::bit::mask::bit_range;
+		using ::bit::mask::lower;
 
 		//all of these are taken from teh ARM Archatecture Reference Manual,
 		//Issue I, Chapter A3
