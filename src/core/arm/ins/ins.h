@@ -5,7 +5,7 @@
 
 #include "core/arm/cpu.h"
 
-#include "common/mask.h"
+#include "common/bit/mask.h"
 #include "common/types.h"
 
 

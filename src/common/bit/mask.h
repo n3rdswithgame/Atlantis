@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace mask {
+namespace bit::mask {
 	template<size_t mask_T, size_t inv_mask_T>
 		struct mask {
 			constexpr static size_t m = mask_T;				//To mask desired 1s
