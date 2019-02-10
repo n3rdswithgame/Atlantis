@@ -217,6 +217,16 @@ namespace arm::ins {
 			db = mask::bit_range<0b10, 24, 23>::m,
 			ib = mask::bit_range<0b11, 24, 23>::m,
 		};
+
+		enum class index_addressing {
+			post = mask::bit<0, 24>::m,
+			pre  = mask::bit<1, 24>::m,
+		};
+
+		enum class mem_size {
+			byte = mask::bit<1,22>::m,
+			word = mask::bit<0,22>::m,
+		};
 	}//namespace arm::ins::parts
 
 	namespace types {
@@ -463,6 +473,21 @@ namespace arm::ins {
 		struct Svc : ArmInst<Armv, mask::SVC> {
 			Svc(u32 num) : ArmInst<Armv, mask::SVC>(mask::lower<24>::apply(num))
 			{}
+		};
+
+		constexpr u32 UEnc(s32 imm) {
+			if(imm < 0)
+				return mask::bit<1, 23>::m;
+			else
+				return mask::bit<0, 23>::m;
+		}
+
+		template<u32 Armv, parts::index_addressing p, parts::mem_size b, parts::priv_status w, parts::mem l>
+		struct LSImm : ArmInst<Armv, mask::LSImmOff> {
+			LSImm(cpu::reg rd, cpu::reg rn, s32 imm) :
+				ArmInst<Armv, mask::LSImmOff>(C(p) | UEnc(imm) | C(b) | C(w) | C(l) | RdRnEnc(rd, rn) | mask::lower<12>::apply(C(imm)))
+			{}
+
 		};
 	} //namespace arm::ins::types
 
