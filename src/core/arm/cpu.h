@@ -249,7 +249,7 @@ namespace fmt {
 
 			#define toStr(x)					\
 			case arm::cpu::reg::x:					\
-				return  format_to(ctx.begin(), "reg::" #x)
+				return  format_to(ctx.out(), "reg::" #x)
 			#define ignore(x)					\
 				case arm::cpu::reg::x: break
 
@@ -274,7 +274,7 @@ namespace fmt {
 				ignore(reg_count);
 			}
 
-			return UNREACHABLE(decltype(format_to(ctx.begin(), "")));
+			return UNREACHABLE(decltype(format_to(ctx.out(), "")));
 
 			#undef toStr
 			#undef ignore

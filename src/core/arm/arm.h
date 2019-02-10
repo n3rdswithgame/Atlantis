@@ -83,12 +83,12 @@ namespace fmt {
 
 			switch(isa) {
 				case arm::isa::arm:
-					return format_to(ctx.begin(), "isa::arm");
+					return format_to(ctx.out(), "isa::arm");
 				case arm::isa::thumb:
-					return format_to(ctx.begin(), "isa::thumb");
+					return format_to(ctx.out(), "isa::thumb");
 			}
 
-			return UNREACHABLE(decltype(format_to(ctx.begin(), "")));
+			return UNREACHABLE(decltype(format_to(ctx.out(), "")));
 
 			#undef ignore
 		}		

@@ -143,12 +143,12 @@ namespace fmt{
 		auto format(const mem::memop &op, FormatContext &ctx) {
 			switch(op) {
 			case mem::memop::read:
-				return format_to(ctx.begin(), "memop::read");
+				return format_to(ctx.out(), "memop::read");
 
 			case mem::memop::write:
-				return format_to(ctx.begin(), "memop::write");
+				return format_to(ctx.out(), "memop::write");
 			}
-			return UNREACHABLE(decltype(format_to(ctx.begin(), "")));	
+			return UNREACHABLE(decltype(format_to(ctx.out(), "")));	
 		}
 	};
 }//namespace fmt

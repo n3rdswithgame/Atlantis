@@ -18,7 +18,7 @@ struct fmt::formatter<Log::Level> {
 	auto format(const Log::Level &lvl, FormatContext &ctx) {
 		#define tostr(lvl)					\
 			case Log::Level::lvl:					\
-			return format_to(ctx.begin(), #lvl)
+			return format_to(ctx.out(), #lvl)
 		#define ignore(x)						\
 			case Log::Level::x: break
 
@@ -33,7 +33,7 @@ struct fmt::formatter<Log::Level> {
 				ignore(Count);
 			}
 		#undef tostr
-		return UNREACHABLE(decltype(format_to(ctx.begin(), "")));	
+		return UNREACHABLE(decltype(format_to(ctx.out(), "")));	
 	}
 };
 
