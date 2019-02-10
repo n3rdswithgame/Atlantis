@@ -337,11 +337,11 @@ namespace arm::ins {
 		template<u32 Armv, parts::dp op, parts::status s>
 		struct DPImmShift : ArmInst<Armv,mask::DPImmShift> {
 			constexpr DPImmShift() : ArmInst<Armv, mask::DPImmShift>()
-			{}
+			= default;
 	
 			constexpr DPImmShift(cpu::reg rd, cpu::reg rn, cpu::reg rm, parts::shift sh, u8 shift_imm) :
 				ArmInst<Armv, mask::DPImmShift>(C(op) | C(s) | ImmShiftEnc(rd, rn, rm, sh, shift_imm))
-			{}
+			= default;
 		};
 		
 		constexpr u32 RegShiftEnc(cpu::reg rd, cpu::reg rn, cpu::reg rm, parts::shift sh, cpu::reg rs) {
@@ -351,11 +351,11 @@ namespace arm::ins {
 		template<u32 Armv, parts::dp op, parts::status s>
 		struct DPRegShift : ArmInst<Armv,mask::DPRegShift> {
 			constexpr DPRegShift() : ArmInst<Armv, mask::DPRegShift>()
-			{}
+			= default;
 	
 			constexpr DPRegShift(cpu::reg rd, cpu::reg rn, cpu::reg rm, parts::shift sh, cpu::reg rs) : 
 				ArmInst<Armv, mask::DPRegShift>(C(op) | C(s) | RegShiftEnc(rd, rn, rm, sh, rs))
-			{}
+			= default;
 		};
 	
 	
@@ -366,11 +366,11 @@ namespace arm::ins {
 		template<u32 Armv, parts::dp op, parts::status s>
 		struct DPImm : ArmInst<Armv,mask::DPImm> {
 			constexpr DPImm() : ArmInst<Armv, mask::DPImm>()
-			{}
+			= default;
 	
 			constexpr DPImm(cpu::reg rd, cpu::reg rn, u8 rot, u8 imm) : 
 				ArmInst<Armv, mask::DPImm>(C(op) | C(s) | RdRnEnc(rd, rn) | RotImmEnc(rot, imm))
-			{}	
+			= default;
 		};
 	
 		constexpr cpu::reg DPDefaultRN(parts::dp op, cpu::reg rd) {
@@ -390,31 +390,31 @@ namespace arm::ins {
 			
 			constexpr DataProcessing(cpu::reg rd,              cpu::reg rm) :
 				DataProcessing(rd, DPDefaultRN(op, rd), rm)
-			{}
+			= default;
 	
 			constexpr DataProcessing(cpu::reg rd, cpu::reg rn, cpu::reg rm) :
 				DataProcessing(rd, rn, rm, parts::shift::lsl, 0)
-			{}
+			= default;
 	
 			constexpr DataProcessing(cpu::reg rd, cpu::reg rn, cpu::reg rm, parts::shift sh, u8 shift_imm) :
 				DPImmShift(rd, rn, rm, sh, shift_imm), DPRegShift(), DPImm()
-			{}
+			= default;
 	
 			//--------------------------------------------------------------------------------------------
 	
 			constexpr DataProcessing(cpu::reg rd, cpu::reg rn, cpu::reg rm, parts::shift sh, cpu::reg rs) :
 				DPImmShift(), DPRegShift(rd, rn, rm, sh, rs), DPImm()
-			{}
+			= default;
 	
 			//--------------------------------------------------------------------------------------------
 	
 			constexpr DataProcessing(cpu::reg rd,              u8 rot, u8 imm) :
 				DataProcessing(rd, rd, rot, imm)
-			{}
+			= default;
 	
 			constexpr DataProcessing(cpu::reg rd, cpu::reg rn, u8 rot, u8 imm) :
 				DPImmShift(), DPRegShift(), DPImm(rd, rn, rot, imm)
-			{}
+			= default;
 	
 			constexpr operator u32() const {
 			//shadow the operator u32 in the super classes
@@ -439,7 +439,7 @@ namespace arm::ins {
 		template<u32 Armv, parts::link l>
 		struct BranchImm : ArmInst<Armv, mask::BranchImm> {
 			constexpr BranchImm(s32 off) : ArmInst<Armv, mask::BranchImm>(BImmEnc(off)) 
-			{}
+			= default;
 		};
 
 		constexpr u32 BlockTransEnc(parts::bt_adressingmode am, parts::priv_status s,
@@ -459,7 +459,7 @@ namespace arm::ins {
 			template<typename... Args>
 			BlockTransfer(cpu::reg rn, Args... args) : 
 				ArmInst<Armv, mask::BlockTransfer>( BlockTransEnc(am, s, w, l, rn) | ReglistEnc(args...))
-			{}
+			= default;
 		};
 
 		//template for all of the ldm instructions
@@ -473,7 +473,7 @@ namespace arm::ins {
 		template<u32 Armv>
 		struct Svc : ArmInst<Armv, mask::SVC> {
 			Svc(u32 num) : ArmInst<Armv, mask::SVC>(mask::lower<24>::apply(num))
-			{}
+			= default;
 		};
 
 		constexpr u32 UEnc(s32 imm) {
@@ -487,7 +487,7 @@ namespace arm::ins {
 		struct LSImm : ArmInst<Armv, mask::LSImmOff> {
 			LSImm(cpu::reg rd, cpu::reg rn, s32 imm) :
 				ArmInst<Armv, mask::LSImmOff>(C(p) | UEnc(imm) | C(b) | C(w) | C(l) | RdRnEnc(rd, rn) | mask::lower<12>::apply(C(imm)))
-			{}
+			= default;
 
 		};
 	} //namespace arm::ins::types
