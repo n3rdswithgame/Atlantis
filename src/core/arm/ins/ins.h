@@ -253,7 +253,7 @@ namespace arm::ins {
 			}
 			constexpr ArmInst(u32 v) {
 				used = true;
-				value = v;
+				value = v | Mask::m;
 			}
 	
 			constexpr u32 getVal() const {
