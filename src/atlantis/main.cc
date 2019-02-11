@@ -54,13 +54,14 @@ int main(int argc, char** argv)
 	using arm::ins::Ldr;
 	using arm::cpu::reg;
 
-	//#define testing(x) DEBUG(#x ":\t{:08x}", static_cast<u32>(x))
+	#define testing(x) DEBUG(#x ":\t{:08x}", static_cast<u32>(x))
 
-	//testing(Ldr(cpu::reg::r0, cpu::reg::r1));
+	testing(Ldr(reg::r0, reg::r1));
+	testing(Ldr(reg::r0, reg::r1, 63));
 
-	u32 test = Ldr(reg::r0, reg::r1);
+
+
 	auto cli_args = parseArgs(argc, argv);
-	DEBUG("{:08x}", test);
 	if(!cli_args) {
 		return -1;
 	}

@@ -222,8 +222,11 @@ namespace arm::ins {
 		};
 
 		enum class index_addressing {
-			post = mask::bit<0, 24>::m,
-			pre  = mask::bit<1, 24>::m,
+			post 			= mask::bit<0, 24>::m | mask::bit<0,21>::m,
+			post_translate 	= mask::bit<0, 24>::m | mask::bit<1,21>::m,
+			offset 			= mask::bit<1, 24>::m | mask::bit<0,21>::m,
+			pre  			= mask::bit<1, 24>::m | mask::bit<1,21>::m,
+
 		};
 
 		enum class mem_size {
@@ -499,35 +502,35 @@ namespace arm::ins {
 		}
 
 
-		template<u32 Armv, parts::index_addressing p, parts::mem_size b, parts::priv_status w, parts::mem l>
+		template<u32 Armv, parts::index_addressing p, parts::mem_size b, parts::mem l>
 		struct LSImm : ArmInst<Armv, mask::LSImmOff> {
 			LSImm() :
 				ArmInst<Armv, mask::LSImmOff>()
 			{}
 
 			LSImm(cpu::reg rd, cpu::reg rn, s32 imm) :
-				ArmInst<Armv, mask::LSImmOff>(C(p) | UEnc(imm) | C(b) | C(w) | C(l) | RdRnEnc(rd, rn) | mask::lower<12>::apply(C(imm)))
+				ArmInst<Armv, mask::LSImmOff>(C(p) | UEnc(imm) | C(b) | C(l) | RdRnEnc(rd, rn) | C(mask::lower<12>::apply(C(imm))) )
 			{}
 		};
 
-		template<u32 Armv, parts::index_addressing p, parts::mem_size b, parts::priv_status w, parts::mem l>
+		template<u32 Armv, parts::index_addressing p, parts::mem_size b, parts::mem l>
 		struct LSRegOff : ArmInst<Armv, mask::LSRegOff> {
 			LSRegOff() :
 				ArmInst<Armv, mask::LSRegOff>()
 			{}
 
 			LSRegOff(cpu::reg rd, cpu::reg rn, parts::apply_off u, cpu::reg rm, parts::shift sh, s8 shift) :
-				ArmInst<Armv, mask::LSRegOff>(C(p) | C(u) | C(b) | C(w) | C(l) 
+				ArmInst<Armv, mask::LSRegOff>(C(p) | C(u) | C(b) | C(l) 
 					| RdRnEnc(rd, rn) | BIT_PLACE(shift, 11, 7) | C(sh) | C(rm))
 			{}
 		};
 
-		template<u32 Armv, parts::index_addressing p, parts::mem_size b, parts::priv_status w, parts::mem l>
-		struct LS : LSImm<Armv, p, b, w, l>,
-					LSRegOff<Armv, p, b, w, l>
+		template<u32 Armv, parts::index_addressing p, parts::mem_size b, parts::mem l>
+		struct LS : LSImm<Armv, p, b, l>,
+					LSRegOff<Armv, p, b, l>
 		{
-			using LSImm 	= arm::ins::types::LSImm<Armv, p, b, w, l>;
-			using LSRegOff 	= arm::ins::types::LSRegOff<Armv, p, b, w, l>;
+			using LSImm 	= arm::ins::types::LSImm<Armv, p, b, l>;
+			using LSRegOff 	= arm::ins::types::LSRegOff<Armv, p, b, l>;
 			using apply_off = parts::apply_off;
 
 			LS(cpu::reg rd, cpu::reg rn) :
@@ -595,14 +598,18 @@ namespace arm::ins {
 		BDT(i ## db_priv, 	base, 1, parts::bt_adressingmode::db, parts::priv_status::user);							\
 		BDT(i ## ib_priv, 	base, 1, parts::bt_adressingmode::ib, parts::priv_status::user)
 
-	#define DEF_LS(i, p, b, w, l)																						\
-		DEF_INST(i, types::LS<1, parts::index_addressing::p, parts::mem_size::b, parts::priv_status::w, parts::mem::l>)
+	#define DEF_LS(i, p, b, l)																							\
+		DEF_INST(i, types::LS<1, parts::index_addressing::p, parts::mem_size::b, parts::mem::l>)
 
 	#define LS_INST(i, ls)																								\
-		DEF_LS(i 	   , pre, word, curr_bank, ls);																		\
-		DEF_LS(i ## b  , pre, byte, curr_bank, ls);																		\
-		DEF_LS(i ## t  , pre, word, user, ls);																		\
-		DEF_LS(i ## bt , pre, byte, user, ls)
+		DEF_LS(i 	   		, offset,			word, ls);																\
+		DEF_LS(i ## b  		, offset,			byte, ls);																\
+		DEF_LS(i ## t  		, post_translate,	word, ls);																\
+		DEF_LS(i ## bt 		, post_translate,	byte, ls);																\
+		DEF_LS(i ## _pre	, post_translate,	word, ls);																\
+		DEF_LS(i ## b_pre	, post_translate,	byte, ls);																\
+		DEF_LS(i ## _post	, post_translate,	word, ls);																\
+		DEF_LS(i ## b_post	, post_translate,	byte, ls)
 
 	DP__INST	(Adc);
 	DP__INST	(Add);
