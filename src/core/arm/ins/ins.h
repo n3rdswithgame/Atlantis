@@ -8,6 +8,8 @@
 #include "common/bit/mask.h"
 #include "common/types.h"
 
+#include "common/logger.h"
+
 
 namespace arm::ins {
 	namespace mask {
@@ -289,7 +291,7 @@ namespace arm::ins {
 		struct Conditional : Arminst{
 			using Arminst::Arminst;
 	
-			using Arminst::getVer;
+			//using Arminst::getVer;
 	
 			constexpr u32 getVal() const {
 				return static_cast<u32>(cond) | Arminst::operator u32();
@@ -468,7 +470,7 @@ namespace arm::ins {
 		template<u32 Armv, parts::bt_adressingmode am, parts::priv_status s, parts::write_back w, parts::mem l>
 		struct BlockTransfer : ArmInst<Armv, mask::BlockTransfer> {
 			template<typename... Args>
-			BlockTransfer(cpu::reg rn, Args... args) : 
+			constexpr BlockTransfer(cpu::reg rn, Args... args) : 
 				ArmInst<Armv, mask::BlockTransfer>( BlockTransEnc(am, s, w, l, rn) | ReglistEnc(args...))
 			{}
 		};
@@ -489,14 +491,20 @@ namespace arm::ins {
 
 		constexpr u32 UEnc(s32 imm) {
 			if(imm < 0)
-				return mask::bit<1, 23>::m;
-			else
+				//subtract offset
 				return mask::bit<0, 23>::m;
+			else
+				//add offset
+				return mask::bit<1, 23>::m;
 		}
 
 
 		template<u32 Armv, parts::index_addressing p, parts::mem_size b, parts::priv_status w, parts::mem l>
 		struct LSImm : ArmInst<Armv, mask::LSImmOff> {
+			LSImm() :
+				ArmInst<Armv, mask::LSImmOff>()
+			{}
+
 			LSImm(cpu::reg rd, cpu::reg rn, s32 imm) :
 				ArmInst<Armv, mask::LSImmOff>(C(p) | UEnc(imm) | C(b) | C(w) | C(l) | RdRnEnc(rd, rn) | mask::lower<12>::apply(C(imm)))
 			{}
@@ -504,6 +512,10 @@ namespace arm::ins {
 
 		template<u32 Armv, parts::index_addressing p, parts::mem_size b, parts::priv_status w, parts::mem l>
 		struct LSRegOff : ArmInst<Armv, mask::LSRegOff> {
+			LSRegOff() :
+				ArmInst<Armv, mask::LSRegOff>()
+			{}
+
 			LSRegOff(cpu::reg rd, cpu::reg rn, parts::apply_off u, cpu::reg rm, parts::shift sh, s8 shift) :
 				ArmInst<Armv, mask::LSRegOff>(C(p) | C(u) | C(b) | C(w) | C(l) 
 					| RdRnEnc(rd, rn) | BIT_PLACE(shift, 11, 7) | C(sh) | C(rm))
@@ -520,7 +532,7 @@ namespace arm::ins {
 
 			LS(cpu::reg rd, cpu::reg rn) :
 				LS(rd, rn, 0)
-			{}
+			{DEBUG("LS {}, [{}]", rd, rn);}
 
 			LS(cpu::reg rd, cpu::reg rn, s32 imm) :
 				LSImm(rd,rn, imm),
@@ -533,43 +545,64 @@ namespace arm::ins {
 				LSImm(),
 				LSRegOff(rd, rn, u, rm, sh, shift)
 			{}
+
+			//-----------------------------------------------------------------------------------
+
+			constexpr operator u32() const {
+			//shadow the operator u32 in the super classes
+				return LSImm::getConditionalVal()
+						| LSRegOff::getConditionalVal();
+			}
+	
+			constexpr u32 getVer() const {
+			//As mentioned above, this will or all of the conditional versions together,
+				return LSImm::getConditionalVer()
+						| LSRegOff::getConditionalVer();
+			}
 		};
 
 	} //namespace arm::ins::types
 
 	//define ins and ins_cond<cond>
-	#define DEF_INST(ins, ...)																					\
-		using ins = types::Conditional< __VA_ARGS__ , parts::cond::al>;											\
-		template<parts::cond cond>																				\
+	#define DEF_INST(ins, ...)																							\
+		using ins = types::Conditional< __VA_ARGS__ , parts::cond::al>;													\
+		template<parts::cond cond>																						\
 		using ins ##_cond = types::Conditional< __VA_ARGS__ , cond>
 
 
 	//define ins(_cond<cond>) and insS(_cond<cond>)
-	#define DP__INST(i)																							\
-		DEF_INST(i, types::DataProcessing<1, parts::dp::i, parts::status::ignore>);								\
+	#define DP__INST(i)																									\
+		DEF_INST(i, types::DataProcessing<1, parts::dp::i, parts::status::ignore>);										\
 		DEF_INST(i ## S, types::DataProcessing<1, parts::dp::i, parts::status::update>)
 
 
-	#define BDT(ins, base, Armv, btam, priv)																	\
-		template<parts::write_back w>																			\
-		using ins = types::Conditional< base< Armv, btam, priv, w>, parts::cond::al>;							\
-		template<parts::write_back w, parts::cond cond>															\
+	#define BDT(ins, base, Armv, btam, priv)																			\
+		template<parts::write_back w>																					\
+		using ins = types::Conditional< base< Armv, btam, priv, w>, parts::cond::al>;									\
+		template<parts::write_back w, parts::cond cond>																	\
 		using ins ## _cond = types::Conditional< base< Armv, btam, priv, w>, cond>
 
 		
-	#define BDT_INST(i, base)																					\
-		BDT(i, 				base, 1, parts::bt_adressingmode::ia, parts::priv_status::curr_bank);				\
-		BDT(i ## da, 		base, 1, parts::bt_adressingmode::da, parts::priv_status::curr_bank);				\
-		BDT(i ## ia, 		base, 1, parts::bt_adressingmode::ia, parts::priv_status::curr_bank);				\
-		BDT(i ## db, 		base, 1, parts::bt_adressingmode::db, parts::priv_status::curr_bank);				\
-		BDT(i ## ib, 		base, 1, parts::bt_adressingmode::ib, parts::priv_status::curr_bank);				\
-		BDT(i ## _priv	, 	base, 1, parts::bt_adressingmode::ia, parts::priv_status::user);					\
-		BDT(i ## da_priv, 	base, 1, parts::bt_adressingmode::da, parts::priv_status::user);					\
-		BDT(i ## ia_priv, 	base, 1, parts::bt_adressingmode::ia, parts::priv_status::user);					\
-		BDT(i ## db_priv, 	base, 1, parts::bt_adressingmode::db, parts::priv_status::user);					\
+	#define BDT_INST(i, base)																							\
+		BDT(i, 				base, 1, parts::bt_adressingmode::ia, parts::priv_status::curr_bank);						\
+		BDT(i ## da, 		base, 1, parts::bt_adressingmode::da, parts::priv_status::curr_bank);						\
+		BDT(i ## ia, 		base, 1, parts::bt_adressingmode::ia, parts::priv_status::curr_bank);						\
+		BDT(i ## db, 		base, 1, parts::bt_adressingmode::db, parts::priv_status::curr_bank);						\
+		BDT(i ## ib, 		base, 1, parts::bt_adressingmode::ib, parts::priv_status::curr_bank);						\
+		BDT(i ## _priv	, 	base, 1, parts::bt_adressingmode::ia, parts::priv_status::user);							\
+		BDT(i ## da_priv, 	base, 1, parts::bt_adressingmode::da, parts::priv_status::user);							\
+		BDT(i ## ia_priv, 	base, 1, parts::bt_adressingmode::ia, parts::priv_status::user);							\
+		BDT(i ## db_priv, 	base, 1, parts::bt_adressingmode::db, parts::priv_status::user);							\
 		BDT(i ## ib_priv, 	base, 1, parts::bt_adressingmode::ib, parts::priv_status::user)
 
+	#define DEF_LS(i, p, b, w, l)																						\
+		DEF_INST(i, types::LS<1, parts::index_addressing::p, parts::mem_size::b, parts::priv_status::w, parts::mem::l>)
 
+	#define LS_INST(i, ls)																								\
+		DEF_LS(i 	   , pre, word, curr_bank, ls);																		\
+		DEF_LS(i ## b  , pre, byte, curr_bank, ls);																		\
+		DEF_LS(i ## t  , pre, word, user, ls);																		\
+		DEF_LS(i ## bt , pre, byte, user, ls)
 
 	DP__INST	(Adc);
 	DP__INST	(Add);
@@ -595,6 +628,9 @@ namespace arm::ins {
 	BDT_INST	(Stm, types::Stmr);
 
 	DEF_INST	(Svc, types::Svc<1>);
+
+	LS_INST		(Ldr, load);
+	LS_INST		(Str, store);
 	//21 down, 27 more for Armv4, 93 more for Armv6
 
 	#undef BDT_INST
