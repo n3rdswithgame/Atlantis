@@ -46,6 +46,9 @@ namespace arm {
 		Bic,
 		Mvn,
 
+		B,
+		Bl,
+
 		Svc,
 
 		undef,  //architectually undefined
@@ -63,7 +66,7 @@ namespace arm {
 		psr,				//program status reg
 		cpr,				//coprocessor reg
 		vpr,				//vector reg
-		address,			//address
+		addr,				//address
 	};
 
 	struct operand_t {
