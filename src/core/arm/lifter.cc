@@ -11,7 +11,7 @@
 
 namespace arm {
 
-	void decodeArm(arm_ins_t& ins, std::string_view mnemonic, std::string_view op_str) {
+	/*void decodeArm(arm_ins_t& ins, std::string_view mnemonic, std::string_view op_str) {
 		//TODO: remove reference captures once fully implemented
 		//this 1st parser would be alot easier if std::s_v::ends_with existed yet	
 		auto conditionalStripper =
@@ -61,7 +61,7 @@ namespace arm {
 				}
 		};
 
-		auto mnemonicParser = [&](std::string_view mne) -> arm::mnemonics {
+		auto mnemonicParser = [&](std::string_view mne) -> arm::operation {
 			//TODO: implement
 			FATAL("unknown mnemonic in instruction\n"
 				"\tins: {}\t{}\n"
@@ -92,6 +92,6 @@ namespace arm {
 			"\t{}\t{}",
 			mnemonic, op_str);
 		std::exit(-1);
-	}
+	}*/
 
 } //namespace arm

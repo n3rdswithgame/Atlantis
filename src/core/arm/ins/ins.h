@@ -11,7 +11,7 @@
 #include "common/logger.h"
 
 
-namespace arm::ins {
+namespace arm::ins::arm {
 	namespace mask {
 		#define C(x)					(static_cast<u32>(x))
 		#define MASK(x,n)				(C(x) & C((1 << (n))-1))
@@ -22,10 +22,15 @@ namespace arm::ins {
 		using ::bit::mask::combine;
 		using ::bit::mask::bit;
 		using ::bit::mask::bit_range;
+		using ::bit::mask::range;
 		using ::bit::mask::lower;
 
 		//all of these are taken from teh ARM Archatecture Reference Manual,
 		//Issue I, Chapter A3
+
+		using Unconditional			= combine<
+										bit_range<0b1111, 31, 28>
+									>;
 
 		using DataProcessing 		= combine<
 										bit_range<0b000, 27, 25>
@@ -140,28 +145,28 @@ namespace arm::ins {
 
 												 // meaning								flags
 
-		eq = mask::bit_range<0b0000, 31, 28>::m, // Equal 								Z set
-		ne = mask::bit_range<0b0001, 31, 28>::m, // Not equal 							Z clear
-		cs = mask::bit_range<0b0010, 31, 28>::m, // Carry set/unsigned higher or same 	C set
-		cc = mask::bit_range<0b0011, 31, 28>::m, // Carry clear/unsigned lower 			C clear
-		mi = mask::bit_range<0b0100, 31, 28>::m, // Minus/negative 						N set
-		pl = mask::bit_range<0b0101, 31, 28>::m, // Plus/positive or zero 				N clear
-		vs = mask::bit_range<0b0110, 31, 28>::m, // Overflow 							V set
-		vc = mask::bit_range<0b0111, 31, 28>::m, // No overflow 						V clear
-		hi = mask::bit_range<0b1000, 31, 28>::m, // Unsigned higher 					C set and Z clear
-		ls = mask::bit_range<0b1001, 31, 28>::m, // Unsigned lower or same 				C clear or Z set
-		ge = mask::bit_range<0b1010, 31, 28>::m, // Signed greater than or equal 		(N == V)
-		lt = mask::bit_range<0b1011, 31, 28>::m, // Signed less than 					(N != V)
-		gt = mask::bit_range<0b1100, 31, 28>::m, // Signed greater than 				(Z == 0,N == V)
-		le = mask::bit_range<0b1101, 31, 28>::m, // Signed less than or equal 			(Z == 1 or N != V)
-		al = mask::bit_range<0b1110, 31, 28>::m, // Always (unconditional) 				always
+			eq = mask::bit_range<0b0000, 31, 28>::m, // Equal 								Z set
+			ne = mask::bit_range<0b0001, 31, 28>::m, // Not equal 							Z clear
+			cs = mask::bit_range<0b0010, 31, 28>::m, // Carry set/unsigned higher or same 	C set
+			cc = mask::bit_range<0b0011, 31, 28>::m, // Carry clear/unsigned lower 			C clear
+			mi = mask::bit_range<0b0100, 31, 28>::m, // Minus/negative 						N set
+			pl = mask::bit_range<0b0101, 31, 28>::m, // Plus/positive or zero 				N clear
+			vs = mask::bit_range<0b0110, 31, 28>::m, // Overflow 							V set
+			vc = mask::bit_range<0b0111, 31, 28>::m, // No overflow 						V clear
+			hi = mask::bit_range<0b1000, 31, 28>::m, // Unsigned higher 					C set and Z clear
+			ls = mask::bit_range<0b1001, 31, 28>::m, // Unsigned lower or same 				C clear or Z set
+			ge = mask::bit_range<0b1010, 31, 28>::m, // Signed greater than or equal 		(N == V)
+			lt = mask::bit_range<0b1011, 31, 28>::m, // Signed less than 					(N != V)
+			gt = mask::bit_range<0b1100, 31, 28>::m, // Signed greater than 				(Z == 0,N == V)
+			le = mask::bit_range<0b1101, 31, 28>::m, // Signed less than or equal 			(Z == 1 or N != V)
+			al = mask::bit_range<0b1110, 31, 28>::m, // Always (unconditional) 				always
 
-		// the invalid conditional is only used on instructions that can't be conditional,
-		// so in the lifter those will just be tagged as AL
+			// the invalid conditional is only used on instructions that can't be conditional,
+			// so in the lifter those will just be tagged as AL
 
-		hs = cs,
-		lo = cc,
-	};
+			hs = cs,
+			lo = cc,
+		};
 
 		enum class dp {
 			And		= mask::bit_range<0b0000, 24, 21>::m,
@@ -181,6 +186,14 @@ namespace arm::ins {
 			Bic		= mask::bit_range<0b1110, 24, 21>::m,
 			Mvn		= mask::bit_range<0b1111, 24, 21>::m,
 		};
+
+
+		constexpr size_t dp_mask_helper(dp op) {
+			return mask::range<24, 21>::extract(static_cast<u32>(op));
+		}
+
+		template<dp op>
+		struct dp_mask : mask::bit_range<dp_mask_helper(op), 24, 21> {};
 
 		enum class status {
 			update = mask::bit<1, 20>::m,
@@ -394,9 +407,9 @@ namespace arm::ins {
 								DPRegShift<Armv, op, s>,
 								DPImm<Armv, op, s>
 		{
-			using DPImmShift = arm::ins::types::DPImmShift<Armv, op, s>;
-			using DPRegShift = arm::ins::types::DPRegShift<Armv, op, s>;
-			using DPImm 	 = arm::ins::types::DPImm<Armv, op, s>;
+			using DPImmShift = ::arm::ins::arm::types::DPImmShift<Armv, op, s>;
+			using DPRegShift = ::arm::ins::arm::types::DPRegShift<Armv, op, s>;
+			using DPImm 	 = ::arm::ins::arm::types::DPImm<Armv, op, s>;
 			
 			constexpr DataProcessing(cpu::reg rd,              cpu::reg rm) :
 				DataProcessing(rd, DPDefaultRN(op, rd), rm)
@@ -529,8 +542,8 @@ namespace arm::ins {
 		struct LS : LSImm<Armv, p, b, l>,
 					LSRegOff<Armv, p, b, l>
 		{
-			using LSImm 	= arm::ins::types::LSImm<Armv, p, b, l>;
-			using LSRegOff 	= arm::ins::types::LSRegOff<Armv, p, b, l>;
+			using LSImm 	= ::arm::ins::arm::types::LSImm<Armv, p, b, l>;
+			using LSRegOff 	= ::arm::ins::arm::types::LSRegOff<Armv, p, b, l>;
 			using apply_off = parts::apply_off;
 
 			LS(cpu::reg rd, cpu::reg rn) :
@@ -646,5 +659,10 @@ namespace arm::ins {
 	#undef DEF_INST
 
 } //namespace arm::ins
+
+namespace arm{
+	namespace arm_mask = ins::arm::mask;
+	namespace arm_parts = ins::arm::parts;
+}
 
 #endif //ARM_INS_H

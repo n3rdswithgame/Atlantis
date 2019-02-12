@@ -15,6 +15,7 @@
 
 #include "core/arm/ins/ins.h"
 
+#include "core/arm/dec_arm/dec.h"
 
 std::optional<atlantis::cli_args> parseArgs(int argc, char** argv) {
 	using namespace clara;
@@ -22,7 +23,7 @@ std::optional<atlantis::cli_args> parseArgs(int argc, char** argv) {
 	bool show_help = false;
 	bool show_ver = false;
 
-	atlantis::cli_args cli_args;
+	atlantis::cli_args 	cli_args;
 	auto cli = Opt(cli_args.rom_name, "rom")["-r"]["--rom-name"]("the rom to open")
 		| Opt(show_ver)["-v"]["--ver"]["--version"]("show the version")
 		| Help(show_help)
@@ -50,17 +51,6 @@ std::optional<atlantis::cli_args> parseArgs(int argc, char** argv) {
 
 int main(int argc, char** argv)
 {
-
-	using arm::ins::Ldr;
-	using arm::cpu::reg;
-
-	#define testing(x) DEBUG(#x ":\t{:08x}", static_cast<u32>(x))
-
-	testing(Ldr(reg::r0, reg::r1));
-	testing(Ldr(reg::r0, reg::r1, 63));
-
-
-
 	auto cli_args = parseArgs(argc, argv);
 	if(!cli_args) {
 		return -1;

@@ -21,28 +21,37 @@ namespace arm {
 		thumb,
 	};
 
-	using cond = ins::parts::cond;
+	using cond = ::arm::ins::arm::parts::cond;
 
-	enum class mnemonics {
+	enum class operation {
 		// basic instruction for now just so the enum
 		// isn't empty. Will add more once I get the 
 		// lifter working and can start testing 
 
-		add,
-		sub,
-		mul,
+		//data_processing
+		And,
+		Eor,
+		Sub,
+		Rsb,
+		Add,
+		Adc,
+		Sbc,
+		Rsc,
+		Tst,
+		Teq,
+		Cmp,
+		Cmn,
+		Orr,
+		Mov,
+		Bic,
+		Mvn,
 
-		ldb,
-		ldh,
-		ldw,
+		Svc,
 
-		stb,
-		sth,
-		stw,
-
-		mov,
-		cmp,
-		b,
+		undef,  //architectually undefined
+		future, // instruction from a futre ARM isa //TODO:work this into the decoder
+		unkn,   //unknown to the decoder
+		count
 	};
 
 	//TODO: consider going back to variant
@@ -62,10 +71,10 @@ namespace arm {
 		reg_t			val;
 	};
 
-	struct arm_ins_t {
+	struct ins_t {
 		addr_t 					addr;
 		arm::cond				cond;
-		mnemonics	 			op;
+		operation	 			op;
 		std::vector<operand_t>	operands;
 	};
 

@@ -72,9 +72,16 @@ namespace bit::mask {
 		template<size_t val, size_t end, size_t begin>
 		struct bit_range : mask<get_bit_range(val, end, begin), get_bit_range(~val, end, begin)> {
 			constexpr static size_t extract(size_t v) {
-				constexpr const mask<get_bit_range(val, end, begin), get_bit_range(~val, end, begin)> m;
-				return (v & (m.m | m.inv_m)) >> begin;
+				constexpr const mask<get_bit_range(val, end, begin), get_bit_range(~val, end, begin)> msk;
+				return (v & (msk.m | msk.inv_m)) >> begin;
 			}
+		};
+
+		template<size_t end, size_t begin>
+		struct range : bit_range<0, end, begin> { 
+		//use a mask of 0, as the inv_m will be all 1s so there
+		//will be only 1s in the relovant positions for extract
+			using bit_range<0, end, begin>::extract;
 		};
 
 

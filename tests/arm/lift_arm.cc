@@ -5,6 +5,8 @@
 #include <array>
 
 #include "core/arm/arm.h"
+#include "core/arm/ins/ins.h"
+#include "core/arm/dec_arm/dec.h"
 #include "core/mem.h"
 #include "core/mmu.h"
 
