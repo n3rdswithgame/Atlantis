@@ -53,6 +53,10 @@ namespace bit::mask {
 				constexpr const mask<get_bit(b,pos), get_bit(~b, pos)> m;
 				return (val & m.m) == m.m;
 			}
+
+			constexpr static bool test(size_t val) {
+				return extract(val);
+			}
 		};
 
 		constexpr size_t get_lower(size_t n) {
@@ -60,7 +64,11 @@ namespace bit::mask {
 		}
 
 		template<size_t n>
-		struct lower : mask<get_lower(n), 0> {};
+		struct lower : mask<get_lower(n), 0> {
+			constexpr static size_t extract(size_t v) {
+				return v & get_lower(n);
+			}
+		};
 
 		//end then begin as all of the arm docs show high bits on the left and low bits on right
 		//takes bits (high-low)...0 and maps them to high...low
