@@ -34,7 +34,7 @@ add_subdirectory(${LIB_DIR})
 add_library(project_warnings INTERFACE)
 target_include_directories(project_warnings INTERFACE src)
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    target_compile_options(project_warnings INTERFACE /W4 /WX)
+    target_compile_options(project_warnings INTERFACE /W4)
 else()
     #modified from https://github.com/lefticus/cppbestpractices
     target_compile_options(project_warnings
