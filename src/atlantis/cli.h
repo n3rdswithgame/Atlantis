@@ -5,7 +5,8 @@
 
 namespace atlantis {
 	struct cli_args {
-		std::string rom_name = "";
+		std::string rom_path  = "";
+		std::string bios_path = "";
 	};
 } //atlantis
 
