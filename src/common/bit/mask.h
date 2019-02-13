@@ -50,8 +50,8 @@ namespace bit::mask {
 		template<size_t b, size_t pos>
 		struct bit : mask<get_bit(b,pos), get_bit(~b, pos)> {
 			constexpr static bool extract(size_t val) {
-				constexpr const mask<get_bit(b,pos), get_bit(~b, pos)> m;
-				return (val & m.m) == m.m;
+				constexpr const mask<get_bit(b,pos), get_bit(~b, pos)> ma;
+				return (val & ma.m) == ma.m;
 			}
 
 			constexpr static bool test(size_t val) {

@@ -32,7 +32,7 @@ namespace arm::dec::arm {
 			i.op = ::arm::operation::B;
 		}
 
-		i.operands.push_back({operand_type::addr, target});
+		i.operands = make_op_ui(target);
 
 		return status::success;
 	}

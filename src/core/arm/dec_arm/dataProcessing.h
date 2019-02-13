@@ -1,9 +1,11 @@
 #ifndef DEC_ARM_DATAPROCESSING_H
 #define DEC_ARM_DATAPROCESSING_H
 
+#include "common.h"
 #include "status.h"
 
 #include "common/types.h"
+#include "common/unreachable.h"
 
 #include "core/arm/arm.h"
 
@@ -51,33 +53,34 @@ namespace arm::dec::arm {
 	}
 
 	inline constexpr ::arm::operation dp_to_op(arm_parts::dp dpOp) {
-		#define mapping(d, o)				\
+		#define dp_to_op_mapping(d, o)		\
 		case arm_parts::dp::d :				\
 			return ::arm::operation::o
 		
 		switch(dpOp) {
-			mapping(And, And);
-			mapping(Eor, Eor);
-			mapping(Sub, Sub);
-			mapping(Rsb, Rsb);
-			mapping(Add, Add);
-			mapping(Adc, Adc);
-			mapping(Sbc, Sbc);
-			mapping(Rsc, Rsc);
-			mapping(Tst, Tst);
-			mapping(Teq, Teq);
-			mapping(Cmp, Cmp);
-			mapping(Cmn, Cmn);
-			mapping(Orr, Orr);
-			mapping(Mov, Mov);
-			mapping(Bic, Bic);
-			mapping(Mvn, Mvn);
+			dp_to_op_mapping(And, And);
+			dp_to_op_mapping(Eor, Eor);
+			dp_to_op_mapping(Sub, Sub);
+			dp_to_op_mapping(Rsb, Rsb);
+			dp_to_op_mapping(Add, Add);
+			dp_to_op_mapping(Adc, Adc);
+			dp_to_op_mapping(Sbc, Sbc);
+			dp_to_op_mapping(Rsc, Rsc);
+			dp_to_op_mapping(Tst, Tst);
+			dp_to_op_mapping(Teq, Teq);
+			dp_to_op_mapping(Cmp, Cmp);
+			dp_to_op_mapping(Cmn, Cmn);
+			dp_to_op_mapping(Orr, Orr);
+			dp_to_op_mapping(Mov, Mov);
+			dp_to_op_mapping(Bic, Bic);
+			dp_to_op_mapping(Mvn, Mvn);
 		}
-
-		#undef mapping
+		return UNREACHABLE(::arm::operation);
+		#undef dp_to_op_mapping
 	}
 
 	inline status dpImmShift(addr_t, u32, out<::arm::ins_t>) {
+		//TODO: immediate
 		return status::nomatch;
 
 	}

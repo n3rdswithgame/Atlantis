@@ -10,9 +10,7 @@
 #include "core/mmu.h"
 
 #include <string_view>
-#include <vector>
-
-#include <capstone/capstone.h>
+#include <variant>
 
 namespace arm {
 
@@ -59,26 +57,58 @@ namespace arm {
 
 	//TODO: consider going back to variant
 	
-	enum class operand_type {
-		u_imm,				//unsigned immediate
-		s_imm,				//  signed immediate
-		gpr,				//general purpose reg
-		psr,				//program status reg
-		cpr,				//coprocessor reg
-		vpr,				//vector reg
-		addr,				//address
-	};
+	namespace operand{
+		struct rr_is { //register register immediate shift
+			cpu::reg 			rd = cpu::reg::r0;
+			cpu::reg 			rn = cpu::reg::r0;
+			cpu::reg 			rm = cpu::reg::r0;
+			u8				 shift = 0;
+			arm_parts::shift  type = arm_parts::shift::lsl;
+		};
+		struct rr_rs {//register register register shift
+			cpu::reg 		   rd = cpu::reg::r0;
+			cpu::reg 		   rn = cpu::reg::r0;
+			cpu::reg 		   rm = cpu::reg::r0;
+			cpu::reg 		   rs = cpu::reg::r0;
+			arm_parts::shift type = arm_parts::shift::lsl;
+		};
+		struct rr_ui {//register register immediate
+			cpu::reg 		   rd = cpu::reg::r0;
+			cpu::reg 		   rn = cpu::reg::r0;
+			u32 			  imm = 0;
+		};
+		struct rr_si {//register register immediate
+			cpu::reg 		   rd = cpu::reg::r0;
+			cpu::reg 		   rn = cpu::reg::r0;
+			s32 			  imm = 0;
+		};
+		struct ui {//unsigned immediate
+			u32 			  imm = 0;
+		};
+		struct si {//signed immediate
+			s32 			  imm = 0;
+		};
+		struct reglist {//register list
+			u32 			  rl = 0;
+		};
 
-	struct operand_t {
-		operand_type	type;
-		reg_t			val;
-	};
+		using operand_t = std::variant<
+							rr_is,
+							rr_rs,
+							rr_ui,
+							rr_si,
+							ui,
+							si,
+							reglist
+						  >;
+	} //namespace arm::oper
 
 	struct ins_t {
 		addr_t 					addr;
+		u32						raw;
 		arm::cond				cond;
 		operation	 			op;
-		std::vector<operand_t>	operands;
+		operand::operand_t		operands;
 	};
 
 	

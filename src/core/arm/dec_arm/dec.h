@@ -19,16 +19,10 @@ namespace arm::dec::arm {
 	//TODO: sitdown and spend a day and half doing this
 	status conditional(addr_t addr, u32 ins, out<::arm::ins_t> i);
 
-	ins_t decodeArm(addr_t addr, u32 ins) {
+	ins_t decode(addr_t addr, u32 ins) {
 		::arm::ins_t i;
 
-		//TODO:profile for optimal reserve-then-shrinking size
-		//and then profile whether reserve-then-shrinking or
-		//ad-hoc reserving is better
-
-		//there should be no more than ~13 operands to any instruction
-		//so bulk reserve now and then trim before return
-		i.operands.reserve(10);
+		i.raw = ins;
 
 		status s = dispatch<
 						decoder<arm_mask::Unconditional, Unconditional>
@@ -41,9 +35,6 @@ namespace arm::dec::arm {
 		if(s == status::future) {
 			i.op = ::arm::operation::future;
 		}
-
-		//trim the vector down
-		i.operands.shrink_to_fit();
 
 		return i;
 	}

@@ -5,6 +5,9 @@
 
 #include "core/ast/ast.h"
 
+#include <capstone/capstone.h>
+	
+
 
 namespace arm {
 	using basic_block			= ast::bb::bb_t<arm_ins_t, isa>;

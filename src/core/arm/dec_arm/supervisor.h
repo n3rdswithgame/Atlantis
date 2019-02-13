@@ -13,7 +13,7 @@ namespace arm::dec::arm {
 
 		u32 svcNum = static_cast<u32>(bit::mask::lower<24>::apply(ins));
 
-		i.operands.push_back({operand_type::u_imm, svcNum});
+		i.operands = make_op_ui(svcNum);
 		
 		return status::success;
 	}
