@@ -7,7 +7,7 @@
 #include "common/bit/mask.h"
 
 namespace arm::dec::arm {
-	status Svc(addr_t, u32 ins, out<::arm::ins_t> i) {
+	inline status Svc(addr_t, u32 ins, out<::arm::ins_t> i) {
 
 		i.op = ::arm::operation::Svc;
 

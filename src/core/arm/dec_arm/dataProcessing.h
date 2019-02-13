@@ -19,7 +19,7 @@ namespace arm::dec::arm {
 
 	constexpr ::arm::operation dp_to_op(arm_parts::dp dpOp);
 
-	status dataProcessing(addr_t addr, u32 ins, out<::arm::ins_t> i) {
+	inline status dataProcessing(addr_t addr, u32 ins, out<::arm::ins_t> i) {
 		return dispatch<
 			dp_decoder<arm_parts::dp::And>,
 			dp_decoder<arm_parts::dp::Eor>,
@@ -41,7 +41,7 @@ namespace arm::dec::arm {
 	}
 
 	template<arm_parts::dp dpOp>
-	status dp_dec_func(addr_t addr, u32 ins, out<::arm::ins_t> i) {
+	inline status dp_dec_func(addr_t addr, u32 ins, out<::arm::ins_t> i) {
 		i.op = dp_to_op(dpOp);
 		return dispatch<
 			decoder<arm_mask::DPImmShift, dpImmShift>,
@@ -50,28 +50,42 @@ namespace arm::dec::arm {
 		>(addr, ins, i);
 	}
 
-	constexpr ::arm::operation dp_to_op(arm_parts::dp dpOp) {
+	inline constexpr ::arm::operation dp_to_op(arm_parts::dp dpOp) {
 		#define mapping(d, o)				\
 		case arm_parts::dp::d :				\
 			return ::arm::operation::o
 		
 		switch(dpOp) {
-			default:
 			mapping(And, And);
+			mapping(Eor, Eor);
+			mapping(Sub, Sub);
+			mapping(Rsb, Rsb);
+			mapping(Add, Add);
+			mapping(Adc, Adc);
+			mapping(Sbc, Sbc);
+			mapping(Rsc, Rsc);
+			mapping(Tst, Tst);
+			mapping(Teq, Teq);
+			mapping(Cmp, Cmp);
+			mapping(Cmn, Cmn);
+			mapping(Orr, Orr);
+			mapping(Mov, Mov);
+			mapping(Bic, Bic);
+			mapping(Mvn, Mvn);
 		}
 
 		#undef mapping
 	}
 
-	status dpImmShift(addr_t, u32, out<::arm::ins_t>) {
+	inline status dpImmShift(addr_t, u32, out<::arm::ins_t>) {
 		return status::nomatch;
 
 	}
-	status dpRegShift(addr_t, u32, out<::arm::ins_t>) {
+	inline status dpRegShift(addr_t, u32, out<::arm::ins_t>) {
 		return status::nomatch;
 
 	}
-	status dpImm(addr_t, u32, out<::arm::ins_t>) {
+	inline status dpImm(addr_t, u32, out<::arm::ins_t>) {
 		return status::nomatch;
 
 	}
