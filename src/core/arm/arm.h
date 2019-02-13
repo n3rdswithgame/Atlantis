@@ -58,6 +58,9 @@ namespace arm {
 	//TODO: consider going back to variant
 	
 	namespace operand{
+		//have as the default so default init does nothing and a fallback
+		//for malformed instructions or anything that doesn't need operands
+		struct empty{};
 		struct rr_is { //register register immediate shift
 			cpu::reg 			rd = cpu::reg::r0;
 			cpu::reg 			rn = cpu::reg::r0;
@@ -93,6 +96,7 @@ namespace arm {
 		};
 
 		using operand_t = std::variant<
+							empty,
 							rr_is,
 							rr_rs,
 							rr_ui,
