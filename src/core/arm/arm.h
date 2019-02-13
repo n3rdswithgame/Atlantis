@@ -19,7 +19,7 @@ namespace arm {
 		thumb,
 	};
 
-	using cond = ::arm::ins::arm::parts::cond;
+	using cond = arm::ins::a::parts::cond;
 
 	enum class operation {
 		// basic instruction for now just so the enum

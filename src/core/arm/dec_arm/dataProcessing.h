@@ -9,19 +9,19 @@
 
 #include "core/arm/arm.h"
 
-namespace arm::dec::arm {
-	status dpImmShift(addr_t, u32, out<::arm::ins_t>);
-	status dpRegShift(addr_t, u32, out<::arm::ins_t>);
-	status dpImm(addr_t, u32, out<::arm::ins_t>);
+namespace arm::dec::a {
+	status dpImmShift(addr_t, u32, out<arm::ins_t>);
+	status dpRegShift(addr_t, u32, out<arm::ins_t>);
+	status dpImm(addr_t, u32, out<arm::ins_t>);
 
 	template<arm_parts::dp op>
-	status dp_dec_func(addr_t, u32, out<::arm::ins_t>);
+	status dp_dec_func(addr_t, u32, out<arm::ins_t>);
 	template<arm_parts::dp op>
 	using dp_decoder = decoder<arm_parts::dp_mask<op>, dp_dec_func<op>>;
 
-	constexpr ::arm::operation dp_to_op(arm_parts::dp dpOp);
+	constexpr arm::operation dp_to_op(arm_parts::dp dpOp);
 
-	inline status dataProcessing(addr_t addr, u32 ins, out<::arm::ins_t> i) {
+	inline status dataProcessing(addr_t addr, u32 ins, out<arm::ins_t> i) {
 		return dispatch<
 			dp_decoder<arm_parts::dp::And>,
 			dp_decoder<arm_parts::dp::Eor>,
@@ -43,7 +43,7 @@ namespace arm::dec::arm {
 	}
 
 	template<arm_parts::dp dpOp>
-	inline status dp_dec_func(addr_t addr, u32 ins, out<::arm::ins_t> i) {
+	inline status dp_dec_func(addr_t addr, u32 ins, out<arm::ins_t> i) {
 		i.op = dp_to_op(dpOp);
 		return dispatch<
 			decoder<arm_mask::DPImmShift, dpImmShift>,
@@ -52,10 +52,10 @@ namespace arm::dec::arm {
 		>(addr, ins, i);
 	}
 
-	inline constexpr ::arm::operation dp_to_op(arm_parts::dp dpOp) {
+	inline constexpr arm::operation dp_to_op(arm_parts::dp dpOp) {
 		#define dp_to_op_mapping(d, o)		\
 		case arm_parts::dp::d :				\
-			return ::arm::operation::o
+			return arm::operation::o
 		
 		switch(dpOp) {
 			dp_to_op_mapping(And, And);
@@ -75,23 +75,23 @@ namespace arm::dec::arm {
 			dp_to_op_mapping(Bic, Bic);
 			dp_to_op_mapping(Mvn, Mvn);
 		}
-		return UNREACHABLE(::arm::operation);
+		return UNREACHABLE(arm::operation);
 		#undef dp_to_op_mapping
 	}
 
-	inline status dpImmShift(addr_t, u32, out<::arm::ins_t>) {
+	inline status dpImmShift(addr_t, u32, out<arm::ins_t>) {
 		//TODO: immediate
 		return status::nomatch;
 
 	}
-	inline status dpRegShift(addr_t, u32, out<::arm::ins_t>) {
+	inline status dpRegShift(addr_t, u32, out<arm::ins_t>) {
 		return status::nomatch;
 
 	}
-	inline status dpImm(addr_t, u32, out<::arm::ins_t>) {
+	inline status dpImm(addr_t, u32, out<arm::ins_t>) {
 		return status::nomatch;
 
 	}
-} //namespace arm::dec::arm
+} //namespace arm::dec::a
 
 #endif //DEC_ARM_DATAPROCESSING_H

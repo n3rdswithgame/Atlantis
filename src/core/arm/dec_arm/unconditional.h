@@ -5,15 +5,15 @@
 
 #include "common/types.h"
 
-namespace arm::dec::arm {
-	inline status Unconditional(addr_t, u32, out<::arm::ins_t> i) {
-		i.cond = ::arm::cond::al;
+namespace arm::dec::a {
+	inline status Unconditional(addr_t, u32, out<arm::ins_t> i) {
+		i.cond = arm::cond::al;
 		//currently no unconditional arm operand is
 		//defined (current goal is up to ARMv4)
 		//TODO: change when I go past ARMv4
-		i.op = ::arm::operation::undef;
+		i.op = arm::operation::undef;
 		return status::future;
 	}
-} //namespace arm::dec::arm
+} //namespace arm::dec::a
 
 #endif //DEC_ARM_UNCONDITIONAL_H

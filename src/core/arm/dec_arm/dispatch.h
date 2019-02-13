@@ -19,7 +19,7 @@ namespace arm::dec {
 	namespace impl {
 		using arm::dec::status;
 		using decoder_func = std::add_pointer_t<
-								arm::dec::status(addr_t, u32, out<::arm::ins_t>)
+								arm::dec::status(addr_t, u32, out<arm::ins_t>)
 							 >;
 
 		template<class Mask, decoder_func dec>
@@ -64,20 +64,20 @@ namespace arm::dec {
 	using decoder = impl::decoder_impl<Mask, dec>;
 
 	template<typename... Decs>
-	inline status dispatch(addr_t addr, u32 ins, out<::arm::ins_t> i) {
+	inline status dispatch(addr_t addr, u32 ins, out<arm::ins_t> i) {
 		return impl::dispatch<Decs...>::impl(addr, ins, i);
 	}
 
-	namespace arm {
+	namespace a {
 		template<class Mask, decoder_func dec>
-		using decoder = ::arm::dec::decoder<Mask, dec>;
+		using decoder = arm::dec::decoder<Mask, dec>;
 
 		template<typename... Decs>
-		inline status dispatch(addr_t addr, u32 ins, out<::arm::ins_t> i) {
-			return ::arm::dec::dispatch<Decs...>(addr, ins, i);
+		inline status dispatch(addr_t addr, u32 ins, out<arm::ins_t> i) {
+			return arm::dec::dispatch<Decs...>(addr, ins, i);
 		}
 
-	} //namespace arm::dec::arm
+	} //namespace arm::dec::a
 
 } //namespace arm::dec
 

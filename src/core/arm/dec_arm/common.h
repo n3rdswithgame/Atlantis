@@ -6,7 +6,7 @@
 
 #include "core/arm/arm.h"
 
-namespace arm::dec::arm {
+namespace arm::dec::a {
 
 	template<size_t high>
 	constexpr u32 extractReg(u32 val) {
@@ -100,6 +100,6 @@ namespace arm::dec::arm {
 	}
 
 
-} //namespace arm::dec::arm
+} //namespace arm::dec::a
 
 #endif //DEC_ARM_COMMON_H

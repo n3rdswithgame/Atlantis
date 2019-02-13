@@ -5,9 +5,9 @@
 
 #include "common/types.h"
 
-namespace arm::dec::arm {
+namespace arm::dec::a {
 	//Reminder this decodes only ARM branches with immediates
-	inline status branchImm(addr_t addr, u32 ins, out<::arm::ins_t> i) {
+	inline status branchImm(addr_t addr, u32 ins, out<arm::ins_t> i) {
 		u32 off = static_cast<u32>(bit::mask::lower<24>::extract(ins));
 		if(bit::mask::bit<1,23>::test(off)) {
 			//sign extend if needed (ie bit 23 of the offset is 1)
@@ -27,15 +27,15 @@ namespace arm::dec::arm {
 
 		//TODO: rewrite using the enum in ins.h
 		if(bit::mask::bit<1,24>::test(ins)) {
-			i.op = ::arm::operation::Bl;
+			i.op = arm::operation::Bl;
 		} else {
-			i.op = ::arm::operation::B;
+			i.op = arm::operation::B;
 		}
 
 		i.operands = make_op_ui(target);
 
 		return status::success;
 	}
-} //namespace arm::dec::arm
+} //namespace arm::dec::a
 
 #endif //DEC_ARM_BRANCHING_H

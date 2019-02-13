@@ -11,7 +11,7 @@
 #include "common/logger.h"
 
 
-namespace arm::ins::arm {
+namespace arm::ins::a {
 	namespace mask {
 		#define C(x)					(static_cast<u32>(x))
 		#define MASK(x,n)				(C(x) & C((1 << (n))-1))
@@ -407,9 +407,9 @@ namespace arm::ins::arm {
 								DPRegShift<Armv, op, s>,
 								DPImm<Armv, op, s>
 		{
-			using DPImmShift = ::arm::ins::arm::types::DPImmShift<Armv, op, s>;
-			using DPRegShift = ::arm::ins::arm::types::DPRegShift<Armv, op, s>;
-			using DPImm 	 = ::arm::ins::arm::types::DPImm<Armv, op, s>;
+			using DPImmShift = arm::ins::a::types::DPImmShift<Armv, op, s>;
+			using DPRegShift = arm::ins::a::types::DPRegShift<Armv, op, s>;
+			using DPImm 	 = arm::ins::a::types::DPImm<Armv, op, s>;
 			
 			constexpr DataProcessing(cpu::reg rd,              cpu::reg rm) :
 				DataProcessing(rd, DPDefaultRN(op, rd), rm)
@@ -542,8 +542,8 @@ namespace arm::ins::arm {
 		struct LS : LSImm<Armv, p, b, l>,
 					LSRegOff<Armv, p, b, l>
 		{
-			using LSImm 	= ::arm::ins::arm::types::LSImm<Armv, p, b, l>;
-			using LSRegOff 	= ::arm::ins::arm::types::LSRegOff<Armv, p, b, l>;
+			using LSImm 	= arm::ins::a::types::LSImm<Armv, p, b, l>;
+			using LSRegOff 	= arm::ins::a::types::LSRegOff<Armv, p, b, l>;
 			using apply_off = parts::apply_off;
 
 			LS(cpu::reg rd, cpu::reg rn) :
@@ -663,8 +663,8 @@ namespace arm::ins::arm {
 } //namespace arm::ins
 
 namespace arm{
-	namespace arm_mask = ins::arm::mask;
-	namespace arm_parts = ins::arm::parts;
+	namespace arm_mask = ins::a::mask;
+	namespace arm_parts = ins::a::parts;
 }
 
 #endif //ARM_INS_H

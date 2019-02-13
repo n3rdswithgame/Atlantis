@@ -15,12 +15,12 @@
 
 
 
-namespace arm::dec::arm {
+namespace arm::dec::a {
 	//TODO: sitdown and spend a day and half doing this
-	status conditional(addr_t addr, u32 ins, out<::arm::ins_t> i);
+	status conditional(addr_t addr, u32 ins, out<arm::ins_t> i);
 
 	ins_t decode(addr_t addr, u32 ins) {
-		::arm::ins_t i;
+		arm::ins_t i;
 
 		i.raw = ins;
 
@@ -33,14 +33,14 @@ namespace arm::dec::arm {
 		}
 
 		if(s == status::future) {
-			i.op = ::arm::operation::future;
+			i.op = arm::operation::future;
 		}
 
 		return i;
 	}
 	
 
-	inline status conditional(addr_t addr, u32 ins, out<::arm::ins_t> i) {
+	inline status conditional(addr_t addr, u32 ins, out<arm::ins_t> i) {
 		return dispatch<
 			decoder<arm_mask::DataProcessing, dataProcessing>,
 			decoder<arm_mask::BranchImm, branchImm>,
@@ -48,5 +48,5 @@ namespace arm::dec::arm {
 		>(addr, ins, i);
 	}
 
-}//namespace arm::dec
+}//namespace arm::dec::a
 #endif //ARM_DEC_H

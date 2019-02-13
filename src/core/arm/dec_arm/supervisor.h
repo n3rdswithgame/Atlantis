@@ -6,10 +6,10 @@
 #include "common/types.h"
 #include "common/bit/mask.h"
 
-namespace arm::dec::arm {
-	inline status Svc(addr_t, u32 ins, out<::arm::ins_t> i) {
+namespace arm::dec::a {
+	inline status Svc(addr_t, u32 ins, out<arm::ins_t> i) {
 
-		i.op = ::arm::operation::Svc;
+		i.op = arm::operation::Svc;
 
 		u32 svcNum = static_cast<u32>(bit::mask::lower<24>::apply(ins));
 
@@ -17,6 +17,6 @@ namespace arm::dec::arm {
 		
 		return status::success;
 	}
-} //namespace arm::dec::arm
+} //namespace arm::dec::a
 
 #endif
