@@ -13,3 +13,6 @@ roms/
 
 #SourceTrail
 SourceTrail/
+
+#fuse file system files
+.fuse*
