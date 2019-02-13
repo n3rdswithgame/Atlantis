@@ -651,7 +651,9 @@ namespace arm::ins::arm {
 
 	LS_INST		(Ldr, load);
 	LS_INST		(Str, store);
-	//21 down, 27 more for Armv4, 93 more for Armv6
+	//29 down, 20 more for Armv4t, 85 more for Armv6
+	//According to the table in A4.2 in the Arm
+	//Archatecture Reference Manual
 
 	#undef BDT_INST
 	#undef BDT
