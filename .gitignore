@@ -1,3 +1,24 @@
+#ignore build folder
+build/
+
+#ignore gba resources
+#definetly don't go to https://www.gbadev.org/docs.php
+res/
+
+#ignore bios
+bios/
+
+#ignore roms used for testing
+roms/
+
+#SourceTrail
+SourceTrail/
+
+#fuse file system files
+.fuse*
+
+#auto generated from github for c++, probably useful
+
 # Prerequisites
 *.d
 
