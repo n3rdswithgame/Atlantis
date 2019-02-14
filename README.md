@@ -1,4 +1,4 @@
-#Atlantis
+# Atlantis
 
 Atlantis is an GBA emulator I am working on. It is not ready for release so the master branch is kinda barebones right now. There is a lot more information on the develop branch.
 
