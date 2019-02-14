@@ -56,6 +56,12 @@ namespace arm::ins::a {
 										bit<1, 4>
 									>;
 
+		using DPExtension			= combine<
+										DataProcessing,
+										bit_range<0b10, 24, 23>,
+										bit<0, 20>
+						 			>;
+
 		using BranchImm				= combine<
 										bit_range<0b101, 27, 25>
 									>;
@@ -74,8 +80,8 @@ namespace arm::ins::a {
 										bit<0, 4>
 									>;
 
-		using LSExtra				= combine<
-										bit_range<0b000, 27, 25>,
+		using Mul_LSExtra			= combine<
+										sbz<27, 25>,
 										bit<1, 7>,
 										bit<1, 4>
 									>;
@@ -90,12 +96,6 @@ namespace arm::ins::a {
 
 		using Media					= combine<
 										bit_range<0b011, 27, 25>,
-										bit<1, 4>
-									>;
-
-		using Multiply				= combine<
-										bit_range<0b000, 27, 25>,
-										bit<1, 7>,
 										bit<1, 4>
 									>;
 
