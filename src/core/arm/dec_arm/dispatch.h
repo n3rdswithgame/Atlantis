@@ -38,8 +38,10 @@ namespace arm::dec {
 		struct dispatch {
 			static status impl(addr_t addr, u32 ins, out<ins_t> i) {
 				status stat = Dec::decode(addr, ins, i);
-				if(stat == status::notchecked || stat == status::future)
+				if(stat == status::notchecked || stat == status::nomatch)
 					return dispatch<Decs...>::impl(addr, ins, i);
+				else if (stat == status::discard_current_dispatch)
+					return status::nomatch;
 				else
 					return stat;
 			}
@@ -50,8 +52,8 @@ namespace arm::dec {
 		struct dispatch<Dec> {
 			static status impl(addr_t addr, u32 ins, out<ins_t> i) {
 				status stat = Dec::decode(addr, ins, i);
-				if(stat == status::notchecked || stat == status::future)
-					return status::nomatch; //no more to recurse so no match
+				if(stat == status::discard_current_dispatch)
+					return status::nomatch;
 				else
 					return stat;
 			}
@@ -78,6 +80,24 @@ namespace arm::dec {
 		}
 
 	} //namespace arm::dec::a
+
+
+	//special functions that will return the status literals
+	inline status IllFormed(addr_t, u32, out<arm::ins_t>) {
+		return status::illformed;
+	}
+
+	inline status Discard(addr_t, u32, out<arm::ins_t>) {
+		return status::discard_current_dispatch;
+	}
+
+	inline status NoMatch(addr_t, u32, out<arm::ins_t>) {
+		return status::nomatch;
+	}
+
+	inline status Future(addr_t, u32, out<arm::ins_t>) {
+		return status::future;
+	}
 
 } //namespace arm::dec
 

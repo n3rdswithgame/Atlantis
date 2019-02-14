@@ -6,6 +6,7 @@ namespace arm::dec {
 		success = 0,
 		nomatch,
 		notchecked,
+		discard_current_dispatch,
 		illformed,
 		future, //valid instruction in a later isa version that the active one
 	};

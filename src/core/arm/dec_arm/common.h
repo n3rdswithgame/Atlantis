@@ -15,20 +15,41 @@ namespace arm::dec::a {
 				);
 	}
 
-	constexpr u32 extractRd(u32 val) {
-		return extractReg<15>(val);
+	constexpr cpu::reg extractRd(u32 val) {
+		return static_cast<cpu::reg>(extractReg<15>(val));
 	}
 
-	constexpr u32 extractRn(u32 val) {
-		return extractReg<19>(val);
+	constexpr cpu::reg extractRn(u32 val) {
+		return static_cast<cpu::reg>(extractReg<19>(val));
 	}
 
-	constexpr u32 extractRs(u32 val) {
-		return extractReg<11>(val);
+	constexpr cpu::reg extractRs(u32 val) {
+		return static_cast<cpu::reg>(extractReg<11>(val));
 	}
 
-	constexpr u32 extractRm(u32 val) {
-		return extractReg<3>(val);
+	constexpr cpu::reg extractRm(u32 val) {
+		return static_cast<cpu::reg>(extractReg<3>(val));
+	}
+
+	constexpr u32 rotateImm(u8 rot, u8 imm) {
+		//i is the bit shift
+		//j is the part rotated around
+		u8 rotation = static_cast<u8>(rot*2);
+		if(rot == 0)
+			return imm;
+		else if(rot < 4) {
+			u32 i = imm;
+			u32 j = imm;
+
+			i >>= rotation;
+			j <<= (32 - rotation);
+
+			return (i | j);
+		} else {
+			u32 j = static_cast<u32>(imm << (32 - rotation));
+			return j;
+		}
+
 	}
 
 	constexpr auto make_op_rr_is(cpu::reg rd, cpu::reg rn, cpu::reg rm, arm_parts::shift type, u8 shift) -> operand::rr_is{
