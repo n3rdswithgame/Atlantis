@@ -33,22 +33,25 @@ namespace arm::ins::a {
 									>;
 
 		using DataProcessing 		= combine<
-										bit_range<0b000, 27, 25>
+										bit_range<0b00, 27, 26>
 									>;
 
 		using DPImmShift			= combine<
 										DataProcessing,
+										bit<0, 25>,
 										bit<0, 4>
 									>;
 
 		using DPRegShift			= combine<
 										DataProcessing,
+										bit<0, 25>,
 										bit<0, 7>,
 										bit<1, 4>
 									>;
 
 		using DPImm					= combine<
 										DataProcessing,
+										bit<1, 25>,
 										bit<1, 7>,
 										bit<1, 4>
 									>;
