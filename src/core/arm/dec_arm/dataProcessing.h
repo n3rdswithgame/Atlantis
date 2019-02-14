@@ -23,6 +23,7 @@ namespace arm::dec::a {
 
 	inline status dataProcessing(addr_t addr, u32 ins, out<arm::ins_t> i) {
 		return dispatch<
+			decoder<arm_mask::DPExtension, Discard>,
 			dp_decoder<arm_parts::dp::And>,
 			dp_decoder<arm_parts::dp::Eor>,
 			dp_decoder<arm_parts::dp::Sub>,
@@ -79,17 +80,42 @@ namespace arm::dec::a {
 		#undef dp_to_op_mapping
 	}
 
-	inline status dpImmShift(addr_t, u32, out<arm::ins_t>) {
-		//TODO: immediate
-		return status::nomatch;
+	inline status dpImmShift(addr_t, u32 ins, out<arm::ins_t> i) {
+		cpu::reg rn = extractRn(ins);
+		cpu::reg rd = extractRd(ins);
+		cpu::reg rm = extractRm(ins);
+		arm_parts::shift type = static_cast<arm_parts::shift>(bit::mask::range<6,5>::strip(ins));
+		u8 shift = static_cast<u8>(bit::mask::range<11,7>::extract(ins));
+
+		i.operands = make_op_rr_is(rd, rn, rm, type, shift);
+
+		return status::success;
 
 	}
-	inline status dpRegShift(addr_t, u32, out<arm::ins_t>) {
-		return status::nomatch;
+
+	inline status dpRegShift(addr_t, u32 ins, out<arm::ins_t> i) {
+
+		cpu::reg rn = extractRn(ins);
+		cpu::reg rd = extractRd(ins);
+		cpu::reg rm = extractRm(ins);
+		arm_parts::shift type = static_cast<arm_parts::shift>(bit::mask::range<6,5>::strip(ins));
+		cpu::reg rs = extractRs(ins);
+
+		i.operands = make_op_rr_rs(rd, rn, rm, type, rs);
+
+		return status::success;
 
 	}
-	inline status dpImm(addr_t, u32, out<arm::ins_t>) {
-		return status::nomatch;
+
+	inline status dpImm(addr_t, u32 ins, out<arm::ins_t> i) {
+		cpu::reg rn = extractRn(ins);
+		cpu::reg rd = extractRd(ins);
+		u8 rot = static_cast<u8>(bit::mask::range<11,8>::strip(ins));
+		u8 imm = static_cast<u8>(bit::mask::range<7,0>::strip(ins));
+
+		i.operands = make_op_rr_ui(rd, rn, rotateImm(rot, imm));
+
+		return status::success;
 
 	}
 } //namespace arm::dec::a
