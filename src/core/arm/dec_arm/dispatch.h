@@ -4,6 +4,7 @@
 
 #include "status.h"
 
+#include <functional>
 #include <type_traits>
 
 #include "core/arm/arm.h"
@@ -25,9 +26,9 @@ namespace arm::dec {
 		template<class Mask, decoder_func dec>
 		struct decoder_impl {
 			using mask = Mask;
-			static status decode(addr_t addr, u32 ins, out<ins_t> i) {
+			inline static status decode(addr_t addr, u32 ins, out<ins_t> i) {
 				if(Mask::matches(ins))
-					return dec(addr, ins, i);
+					return std::invoke(dec, addr, ins, i);
 				else
 					return status::notchecked;
 			}
@@ -36,7 +37,7 @@ namespace arm::dec {
 
 		template<typename Dec, typename... Decs>
 		struct dispatch {
-			static status impl(addr_t addr, u32 ins, out<ins_t> i) {
+			inline static status impl(addr_t addr, u32 ins, out<ins_t> i) {
 				status stat = Dec::decode(addr, ins, i);
 				if(stat == status::notchecked || stat == status::nomatch)
 					return dispatch<Decs...>::impl(addr, ins, i);
@@ -50,7 +51,7 @@ namespace arm::dec {
 		//template recursion base case
 		template<typename Dec>
 		struct dispatch<Dec> {
-			static status impl(addr_t addr, u32 ins, out<ins_t> i) {
+			inline static status impl(addr_t addr, u32 ins, out<ins_t> i) {
 				status stat = Dec::decode(addr, ins, i);
 				if(stat == status::discard_current_dispatch)
 					return status::nomatch;

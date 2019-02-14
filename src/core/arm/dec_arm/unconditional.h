@@ -6,13 +6,13 @@
 #include "common/types.h"
 
 namespace arm::dec::a {
-	inline status Unconditional(addr_t, u32, out<arm::ins_t> i) {
+	inline status Unconditional(addr_t addr, u32 ins, out<arm::ins_t> i) {
 		i.cond = arm::cond::al;
 		//currently no unconditional arm operand is
 		//defined (current goal is up to ARMv4)
 		//TODO: change when I go past ARMv4
 		i.op = arm::operation::undef;
-		return status::future;
+		return Future(addr, ins, i);
 	}
 } //namespace arm::dec::a
 
