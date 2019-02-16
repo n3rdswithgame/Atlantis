@@ -1,13 +1,15 @@
 #ifndef DEC_ARM_BRANCHING_H
 #define DEC_ARM_BRANCHING_H
 
+#include "status.h"
+
 #include "core/arm/arm.h"
 
 #include "common/types.h"
 
 namespace arm::dec::a {
 	//Reminder this decodes only ARM branches with immediates
-	inline status branchImm(addr_t addr, u32 ins, out<arm::ins_t> i) {
+	inline status BranchImm(addr_t addr, u32 ins, out<arm::ins_t> i) {
 		u32 off = static_cast<u32>(bit::mask::lower<24>::extract(ins));
 		if(bit::mask::bit<1,23>::test(off)) {
 			//sign extend if needed (ie bit 23 of the offset is 1)

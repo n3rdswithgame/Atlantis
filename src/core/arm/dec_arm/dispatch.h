@@ -66,6 +66,9 @@ namespace arm::dec {
 	template<class Mask, decoder_func dec>
 	using decoder = impl::decoder_impl<Mask, dec>;
 
+	struct always : bit::mask::mask<0,0> {}; //always match for the decoder
+	struct never : bit::mask::mask<1,1> {}; //never match for the decoder (low bit is either 0 or 1, not both)
+
 	template<typename... Decs>
 	inline status dispatch(addr_t addr, u32 ins, out<arm::ins_t> i) {
 		return impl::dispatch<Decs...>::impl(addr, ins, i);

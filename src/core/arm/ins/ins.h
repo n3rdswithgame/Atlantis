@@ -10,6 +10,9 @@
 
 #include "common/logger.h"
 
+//TODO: rewrite aroudn ARMv7 instead of ARMv4
+
+//TODO: split into multipel files
 
 namespace arm::ins::a {
 	namespace mask {
@@ -24,43 +27,87 @@ namespace arm::ins::a {
 		using ::bit::mask::bit_range;
 		using ::bit::mask::range;
 		using ::bit::mask::lower;
+		using ::bit::mask::sbz;
+		using ::bit::mask::sbo;
+		
+		using ::bit::mask::shift_mask;
 
-		//all of these are taken from teh ARM Archatecture Reference Manual,
-		//Issue I, Chapter A3
+
+
+		//all of these are taken from 2 versions of  ARM Archatecture
+		//Reference Manual, both Issue I of the original and Issue C.c
+		//of the ARMv7-A and ARMv7-R edition
+		//in both, look for the chapter related to the ARM  intstruction
+		//encoding
 
 		using Unconditional			= combine<
 										bit_range<0b1111, 31, 28>
 									>;
+		//----------------------------------------------------------
 
-		using DataProcessing 		= combine<
+		using DataProcessingLike	= combine<
 										bit_range<0b00, 27, 26>
 									>;
 
 		using DPImmShift			= combine<
-										DataProcessing,
+										DataProcessingLike,
 										bit<0, 25>,
 										bit<0, 4>
 									>;
 
 		using DPRegShift			= combine<
-										DataProcessing,
+										DataProcessingLike,
 										bit<0, 25>,
 										bit<0, 7>,
 										bit<1, 4>
 									>;
 
 		using DPImm					= combine<
-										DataProcessing,
+										DataProcessingLike,
 										bit<1, 25>,
 										bit<1, 7>,
 										bit<1, 4>
 									>;
 
-		using DPExtension			= combine<
-										DataProcessing,
-										bit_range<0b10, 24, 23>,
-										bit<0, 20>
-						 			>;
+		template<size_t op_bit, typename op1, typename op2>
+		using DataProcessingExtra	= combine<
+										DataProcessingLike,
+										bit<op_bit, 25>,
+										shift_mask<op1, 24, 20>,
+										shift_mask<op2, 7, 4>
+									>;
+
+		using Mul					= DataProcessingExtra<
+										0,
+										MSK("0xxxx"),
+										MSK("1001")
+									>;
+									
+		using Synchronization		= DataProcessingExtra<
+										0,
+										MSK("1xxxx"),
+										MSK("1001")
+									>;
+		using Mov_16				= DataProcessingExtra<
+										1,
+										MSK("10000"),
+										MSK("xxxx")
+									>;
+		using Movt_16				= DataProcessingExtra<
+										1,
+										MSK("10100"),
+										MSK("xxxx")
+									>;
+		using MSR_Hints				= DataProcessingExtra<
+										1,
+										MSK("10x10"),
+										MSK("xxxx")
+									>;
+
+
+
+
+		//------ end DataProcessing Like--------------------------
 
 		using BranchImm				= combine<
 										bit_range<0b101, 27, 25>
@@ -78,12 +125,6 @@ namespace arm::ins::a {
 		using LSRegOff				= combine<
 										bit_range<0b011, 27, 25>,
 										bit<0, 4>
-									>;
-
-		using Mul_LSExtra			= combine<
-										sbz<27, 25>,
-										bit<1, 7>,
-										bit<1, 4>
 									>;
 
 		using SVC					= combine<

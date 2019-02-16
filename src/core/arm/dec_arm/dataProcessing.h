@@ -21,9 +21,17 @@ namespace arm::dec::a {
 
 	constexpr arm::operation dp_to_op(arm_parts::dp dpOp);
 
-	inline status dataProcessing(addr_t addr, u32 ins, out<arm::ins_t> i) {
+	inline status DataProcessing(addr_t addr, u32 ins, out<arm::ins_t> i);
+
+	inline status DataProcessingLike(addr_t addr, u32 ins, out<arm::ins_t> i) {
+		return dispatch <
+			decoder<               always, DataProcessing>
+		>(addr, ins, i);
+	}
+
+
+	inline status DataProcessing(addr_t addr, u32 ins, out<arm::ins_t> i) {
 		return dispatch<
-			decoder<arm_mask::DPExtension, Discard>,
 			dp_decoder<arm_parts::dp::And>,
 			dp_decoder<arm_parts::dp::Eor>,
 			dp_decoder<arm_parts::dp::Sub>,

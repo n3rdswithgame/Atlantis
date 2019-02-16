@@ -44,9 +44,20 @@ namespace arm {
 		Bic,
 		Mvn,
 
+		//branching w/ immediates
 		B,
 		Bl,
 
+		//loads + stores
+		loadW,	//load word
+		loadB,	//load byte
+		loadH,	//load unsigned hword
+		loadSH,	//load signed hword
+		storeW,	//store word
+		storeB,	//store byte
+		storeH,	//store h
+
+		//syscall
 		Svc,
 
 		undef,  //architectually undefined
