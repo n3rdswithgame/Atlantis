@@ -4,14 +4,16 @@
 #include <string>
 #include <iostream>
 
+//TODO: move format_guard out of format.cc so I can use it here
+
 #ifdef UNREACHABLE_IMPL
 template<class T>
 [[noreturn]]
 constexpr T unreachable_impl(const char* file, unsigned int line, const char* func) {
 	std::cerr << "[Fatal Error] unreachable reached\n";
-	std::cerr << "\t in file " << file << ":" << line << "\n";
+	std::cerr << "\t in file " << file << ':' << line << '\n';
 	std::cerr << "\t in function " << func << std::endl;
-	exit(-1);
+	std::exit(static_cast<int>(0xDEADC0DE));
 }
 #else
 [[noreturn]]
