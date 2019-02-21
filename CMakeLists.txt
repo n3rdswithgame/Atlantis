@@ -73,6 +73,12 @@ else()
 
                                 )
     endif()
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_compile_options(project_warnings
+                                INTERFACE
+                                -Wno-nested-anon-types #capstone raises this so supress it
+                                )
+    endif()
 endif()
 
 if(BUILD_TESTS)
