@@ -22,6 +22,14 @@ namespace cexpr {
 	    return d_first;
 	}
 
+	template<class InputIt, class OutputIt>
+	constexpr OutputIt move(InputIt first, InputIt last, OutputIt d_first) {
+	    while (first != last) {
+	        *d_first++ = std::move(*first++);
+	    }
+	    return d_first;
+	}
+
 	template< class T, class Compare >
 	constexpr T max( std::initializer_list<T> ilist, Compare comp ) {
 		std::max(ilist, comp);

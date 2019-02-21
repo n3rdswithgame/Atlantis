@@ -32,7 +32,7 @@ namespace ast::bb {
 			return begin_addr <= addr && addr <= end_addr;
 		}
 
-		size_t numInstrucitons(addr_t addr) const {
+		size_t numInstrucitons() const {
 			return ins.size();
 		}
 
@@ -71,7 +71,7 @@ namespace ast::bb {
 		~tracker_t() = default;
 
 		bool contains(addr_t addr) {
-			return bb.contains;
+			return bb.contains(addr);
 		}
 	};
 

@@ -1,25 +1,34 @@
 #ifndef ARM_LIFTER_H
 #define ARM_LIFTER_H
 
-#include "arm.h"
+#include "cpu.h"
+#include "ins.h"
 
 #include "core/ast/ast.h"
+#include "core/mmu.h"
+
 
 #include <capstone/capstone.h>
 	
 
 
 namespace arm {
-	using basic_block			= ast::bb::bb_t<arm_ins_t, isa>;
-	using basic_block_tracker	= ast::bb::tracker_t<arm_ins_t, isa>;
+	using basic_block			= ast::bb::bb_t<ins_t, isa>;
+	using basic_block_tracker	= ast::bb::tracker_t<ins_t, isa>;
 
-	void decodeArm(arm_ins_t& ins, std::string_view mnemonic, std::string_view op_str);
-	void decodeThumb(arm_ins_t& ins, std::string_view mnemonic, std::string_view op);
+	template<isa i>
+	ins_t decode(cs_insn*);
+
+	//these will be instantiated in lifter.cc
+	//extern template ins_t decode<isa::arm>(cs_insn*);
+	//extern template ins_t decode<isa::thumb>(cs_insn*);
 
 	template<typename Region>
-	class Lifter : ast::Lifter<Lifter<Region>, arm_ins_t, isa, mmu::mmu<Region>> {
+	class Lifter : public ast::Lifter<Lifter<Region>, ins_t, isa, mmu::mmu<Region>> {
 
-		using ast_Lifter = ast::Lifter<Lifter<Region>, arm_ins_t, isa, mmu::mmu<Region>>;
+		friend class ast::Lifter<Lifter<Region>, ins_t, isa, mmu::mmu<Region>>;
+
+		using ast_Lifter = ast::Lifter<Lifter<Region>, ins_t, isa, mmu::mmu<Region>>;
 		
 		//TODO: Profile 2 different capstone instances
 		//vs 1 and switching the isa as needed
@@ -28,7 +37,7 @@ namespace arm {
 
 
 	public:
-		Lifter(const mmu::mmu<Region> &m) : ast_Lifter(m) {
+		Lifter(mmu::mmu<Region> &m) : ast_Lifter(m) {
 			if(cs_err ret = cs_open(CS_ARCH_ARM, CS_MODE_ARM, &cap_arm);
 				ret != CS_ERR_OK) {
 				FATAL("Error creating ARM capstone engine with error code: {}", ret);
@@ -37,6 +46,8 @@ namespace arm {
 				ret != CS_ERR_OK) {
 				FATAL("Error creating THUMB capstone engine with error code: {}", ret);
 			}
+			cs_option(cap_arm, CS_OPT_DETAIL, CS_OPT_ON);
+			cs_option(cap_thumb, CS_OPT_DETAIL, CS_OPT_ON);
 		}
 
 		Lifter(Lifter&& l) {
@@ -52,24 +63,24 @@ namespace arm {
 		}
 
 	private:
-		arm_ins_t fetch_impl(addr_t pc) {
+		ins_t fetch_impl(addr_t pc) {
 			if((pc & 1) == 0)
 				return fetchArm_impl(pc);
 			else
 				return fetchThumb_impl(pc & (~1U)); // translate pc into address
 		}
 		
-		arm_ins_t fetchArm_impl(addr_t addr) {
+		ins_t fetchArm_impl(addr_t addr) {
 			return fetchArch_impl<isa::arm>(addr);
 		}
 
-		arm_ins_t fetchThumb_impl(addr_t addr) {
+		ins_t fetchThumb_impl(addr_t addr) {
 			//pc is already translated into an address in fetch_impl
 			return fetchArch_impl<isa::thumb>(addr);
 		}
 		
 		template<isa i>
-		arm_ins_t fetchArch_impl(addr_t addr) {
+		ins_t fetchArch_impl(addr_t addr) {
 			constexpr size_t num_inst = 1;
 			constexpr bool is_arm = (i == isa::arm);
 	
@@ -83,6 +94,8 @@ namespace arm {
 				count = cs_disasm(cap_arm, reinterpret_cast<u8*>(&machine_code),
 					sizeof(machine_code), addr, num_inst, &insn);
 			} else {
+				addr |= 1;// to ensure that the instructions will diassemble correctly 
+				//for any pc relative op, like a str/ldm rel pc, or branch rel imm
 				u16 machine_code = static_cast<u16>(ast_Lifter::template mmuFetch<u16>(addr).read_val);
 				raw_machine_code = machine_code;
 				count = cs_disasm(cap_thumb, reinterpret_cast<u8*>(&machine_code),
@@ -99,14 +112,8 @@ namespace arm {
 				return {};
 			}
 	
-			arm_ins_t ins{};
+			ins_t ins = decode<i>(insn);
 			ins.addr = addr;
-	
-			if constexpr(is_arm) {
-				decodeArm(ins, insn[0].mnemonic, insn[0].op_str);
-			} else {
-				decodeThumb(ins, insn[0].mnemonic, insn[0].op_str);
-			}
 	
 			cs_free(insn, num_inst);
 	

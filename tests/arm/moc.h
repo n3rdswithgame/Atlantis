@@ -16,6 +16,9 @@ enum moc_arm : size_t { //not enum class to avoid static_casts
 	copros_op,
 	copros_reg_trans,
 	svc,
+	status_mode,
+
+	random_ins,
 
 	count,
 };

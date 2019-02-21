@@ -1,6 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "common/logger.h"
 #include "common/unreachable.h"
 #include "common/types.h"
 
@@ -121,6 +122,95 @@ namespace arm::cpu {
 		gpr_count,
 	};
 
+	enum class vpr_s : u8 {
+		s0,
+		s1,
+		s2,
+		s3,
+		s4,
+		s5,
+		s6,
+		s7,
+		s8,
+		s9,
+		s10,
+		s11,
+		s12,
+		s13,
+		s14,
+		s15,
+		s16,
+		s17,
+		s18,
+		s19,
+		s20,
+		s21,
+		s22,
+		s23,
+		s24,
+		s25,
+		s26,
+		s27,
+		s28,
+		s29,
+		s30,
+		s31,
+	};
+
+	enum class vpr_d : u8 {
+		d0,
+		d1,
+		d2,
+		d3,
+		d4,
+		d5,
+		d6,
+		d7,
+		d8,
+		d9,
+		d10,
+		d11,
+		d12,
+		d13,
+		d14,
+		d15,
+		d16,
+		d17,
+		d18,
+		d19,
+		d20,
+		d21,
+		d22,
+		d23,
+		d24,
+		d25,
+		d26,
+		d27,
+		d28,
+		d29,
+		d30,
+		d31,
+	};
+
+	enum class vpr_q : u8 {
+		q0,
+		q1,
+		q2,
+		q3,
+		q4,
+		q5,
+		q6,
+		q7,
+		q8,
+		q9,
+		q10,
+		q11,
+		q12,
+		q13,
+		q14,
+		q15
+	};
+
 	enum status_reg_masks : u32 {
 		N 		= BIT(31),   //Negative
 		Z 		= BIT(30),   //Zero
@@ -133,6 +223,13 @@ namespace arm::cpu {
 
 		MODE	= BIT(5) - 1
 	};
+
+	enum class sr : u8 {
+		apsr,
+		cpsr,
+		spsr,
+	};
+
 	using psr_t = enum : reg_t{
 		cspr,
 		spsr_fiq,
@@ -225,6 +322,22 @@ namespace arm::cpu {
 		#undef toStr
 	}
 
+	constexpr const char* getPsrName(sr reg) {
+		#define toStr(x)					\
+		case sr::x:							\
+			return #x
+		#define ignore(x)					\
+			case x: break;
+		switch(reg) {
+			toStr(apsr);
+			toStr(cpsr);
+			toStr(spsr);
+		}
+		return UNREACHABLE(char*);
+		#undef toStr
+		#undef ignore
+	}
+
 	struct state {
 		std::array<reg_t,gpr_count> gpr = {};
 		std::array<reg_t,psr_count> psr = {};
@@ -273,9 +386,10 @@ namespace fmt {
 
 				ignore(reg_count);
 			}
-
-			return UNREACHABLE(decltype(format_to(ctx.out(), "")));
-
+			std::cout << static_cast<s32>(reg) << '\n';
+			FATAL("invalid register {}", static_cast<s32>(reg));
+			//return UNREACHABLE(decltype(format_to(ctx.out(), "")));
+			return(ctx.out());
 			#undef toStr
 			#undef ignore
 		}		

@@ -13,9 +13,7 @@
 #include "core/mem.h"
 #include "core/gba/gba.h"
 
-#include "core/arm/ins/ins.h"
 
-#include "core/arm/dec_arm/dec.h"
 
 std::optional<atlantis::cli_args> parseArgs(int argc, char** argv) {
 	using namespace clara;

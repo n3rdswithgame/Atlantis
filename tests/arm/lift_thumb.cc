@@ -5,5 +5,5 @@
 //#include "../../src/core/arm/arm.h"
 
 TEST_CASE("Testing decodeing + lifting of thumb inst", "[thumb lifting]") {
-	REQUIRE(1 == 1);
+	REQUIRE(0 == 0);
 }

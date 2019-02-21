@@ -23,7 +23,7 @@ namespace ast {
 		using isa_t = isa_type;
 		using mmu_t = mmu_type;
 
-		Lifter(mmu_t* m) : mmu(m) {}
+		Lifter(mmu_t& m) : mmu(&m) {}
 		Lifter(Lifter&& l) {
 			mmu = std::exchange(l.mmu, nullptr);
 		}
@@ -38,7 +38,7 @@ namespace ast {
 	protected:
 		template<typename T>
 		auto mmuFetch(addr_t addr) -> mem::read_ret<T>{
-			return mmu->read(addr);
+			return mmu->template read<T>(addr);
 		}
 
 	#undef crtp
