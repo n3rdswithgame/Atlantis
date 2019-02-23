@@ -12,11 +12,15 @@
 
 
 namespace ast {
-	template<class ins_t, typename isa_t>
+	template<emu_targets target>
 	class dispatcher {
 	public:
-		using bb = typename ::ast::bb::bb_t<ins_t, isa_t>;
-		using tracker = typename ::ast::bb::tracker_t<ins_t, isa_t>;
+		using ins_t = typename emu_traits<target>::ins_t;
+		using isa_t = typename emu_traits<target>::isa_t;
+
+
+		using bb = typename bb::template bb_t<target>;
+		using tracker = typename bb::template tracker_t<target>;
 		
 	private:
 		using dispatcher_type = std::unordered_map<addr_t, tracker>;

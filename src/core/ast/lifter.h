@@ -10,18 +10,20 @@
 //"Concept":
 
 namespace ast {
-	template<class CRTP, class ins_type, typename isa_type, class mmu_type>
+	template<class CRTP, emu_targets target>
 	class Lifter {
 	#define crtp (static_cast<CRTP*>(this))
-		mmu_type* mmu;
+
+		using emu_traits = typename ast::emu_traits<target>;
+		typename emu_traits::mmu_t* mmu;
 
 
 
 	public:
 		
-		using ins_t = ins_type;
-		using isa_t = isa_type;
-		using mmu_t = mmu_type;
+		using ins_t = typename emu_traits::ins_t;
+		using isa_t = typename emu_traits::isa_t;
+		using mmu_t = typename emu_traits::mmu_t;
 
 		Lifter(mmu_t& m) : mmu(&m) {}
 		Lifter(Lifter&& l) {

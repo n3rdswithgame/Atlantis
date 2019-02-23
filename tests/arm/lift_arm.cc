@@ -30,13 +30,14 @@ constexpr mem::map<moc_arm> genMemMap() {
 
 template<typename... RawIns>
 std::array<arm::ins_t, sizeof...(RawIns)> Setup(moc_arm region, RawIns... rawIns) {
+
 	//auto nop = [](auto arg) {return arg};
 	std::array<u32, sizeof...(RawIns)> backing{};
 	std::array<u32, sizeof...(RawIns)> machine_code = {static_cast<u32>(rawIns)...};
 
 	mem::map<moc_arm> memmap = genMemMap();
 	mmu::mmu<moc_arm> mmu(memmap);
-	arm::Lifter<moc_arm> lift(mmu);
+	arm::Lifter<emu_targets::arm_moc> lift(mmu);
 
 	mem::region_t& r = mmu[region];
 	//this is fine as the values will first be written to below in the mmu.write<u32> method call

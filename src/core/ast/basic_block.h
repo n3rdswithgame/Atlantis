@@ -3,19 +3,19 @@
 
 #include <algorithm>
 #include <chrono>
-#include <optional>
 #include <vector>
-#include <variant>
+
+#include "core/targets.h"
 
 #include "common/types.h"
 
 
 namespace ast::bb {
 
-	template<class Ins_t, typename Isa_t>
+	template<emu_targets target>
 	struct bb_t {
-		using ins_t = Ins_t;
-		using isa_t = Isa_t;
+		using ins_t = typename emu_traits<target>::ins_t;
+		using isa_t = typename emu_traits<target>::isa_t;
 
 		isa_t				isa; //support for emulation with multiple isa like arm/thumb
 		std::vector<ins_t> 	ins;
@@ -49,11 +49,12 @@ namespace ast::bb {
 		jited
 	};
 
-	template<class Ins_t, typename Isa_t>
+	template<emu_targets target>
 	struct tracker_t {
-		using ins_t = Ins_t;
-		using isa_t = Isa_t;
-		using bb_t = ast::bb::bb_t<Ins_t, Isa_t>;
+		using ins_t = typename emu_traits<target>::ins_t;
+		using isa_t = typename emu_traits<target>::isa_t;
+
+		using bb_t = bb_t<target>;
 
 		bb_t bb;
 		status bb_status = status::empty;

@@ -4,32 +4,50 @@
 #include "cpu.h"
 #include "ins.h"
 
-#include "core/ast/ast.h"
 #include "core/mmu.h"
 
+#include "core/ast/types.h"
+#include "core/ast/ast.h"
+
+#include <type_traits>
 
 #include <capstone/capstone.h>
 	
 
 
 namespace arm {
-	using basic_block			= ast::bb::bb_t<ins_t, isa>;
-	using basic_block_tracker	= ast::bb::tracker_t<ins_t, isa>;
 
 	template<isa i>
 	ins_t decode(cs_insn*);
+	
+
+	//forward declare this for the lfiter check
+	struct emu_traits;
 
 	//these will be instantiated in lifter.cc
 	//extern template ins_t decode<isa::arm>(cs_insn*);
 	//extern template ins_t decode<isa::thumb>(cs_insn*);
+	
 
-	template<typename Region>
-	class Lifter : public ast::Lifter<Lifter<Region>, ins_t, isa, mmu::mmu<Region>> {
+	template<emu_targets target>
+	class Lifter : public ast::Lifter<Lifter<target>, target> {
 
-		friend class ast::Lifter<Lifter<Region>, ins_t, isa, mmu::mmu<Region>>;
 
-		using ast_Lifter = ast::Lifter<Lifter<Region>, ins_t, isa, mmu::mmu<Region>>;
+		using emu_traits = typename ast::emu_traits<target>;
+
+		static_assert(
+			std::is_base_of_v<
+				arm::emu_traits,
+				emu_traits
+			>,
+		"attempting to use the arm lifter with a non arm target");
+
+		friend class ast::Lifter<Lifter<target>, target>;
+
+		using ast_Lifter = ast::Lifter<Lifter<target>, target>;
 		
+		using mmu_t = typename emu_traits::mmu_t;
+
 		//TODO: Profile 2 different capstone instances
 		//vs 1 and switching the isa as needed
 		csh cap_arm;
@@ -37,7 +55,7 @@ namespace arm {
 
 
 	public:
-		Lifter(mmu::mmu<Region> &m) : ast_Lifter(m) {
+		Lifter(mmu_t &m) : ast_Lifter(m) {
 			if(cs_err ret = cs_open(CS_ARCH_ARM, CS_MODE_ARM, &cap_arm);
 				ret != CS_ERR_OK) {
 				FATAL("Error creating ARM capstone engine with error code: {}", ret);

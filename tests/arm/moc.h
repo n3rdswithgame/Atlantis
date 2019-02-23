@@ -1,6 +1,10 @@
 #ifndef MOC_H
 #define MOC_H
 
+#include "core/targets.h"
+
+#include "core/arm/arm.h"
+
 enum moc_arm : size_t { //not enum class to avoid static_casts
 	data_processing,
 	mul,
@@ -22,5 +26,20 @@ enum moc_arm : size_t { //not enum class to avoid static_casts
 
 	count,
 };
+
+namespace ast {
+	template<>
+	struct emu_traits<emu_targets::arm_moc> : arm::emu_traits{
+
+		using region_t	= moc_arm;
+		using mmu_t		= mmu::mmu<region_t>;
+
+		//using BB_t	= ast::bb::bb_t<ins_t, isa>;
+		//using BBT_t	= ast::bb::tracker_t<ins_t, isa>;
+
+	};
+} //namespace ast
+
+using emu_traits = ast::emu_traits<emu_targets::arm_moc>;
 
 #endif //MOC_H
