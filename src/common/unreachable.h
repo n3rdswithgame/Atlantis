@@ -6,9 +6,11 @@
 
 //TODO: move format_guard out of format.cc so I can use it here
 
+#define NORETURN [[noreturn]] [[gnu::noreturn]]
+
 #ifdef UNREACHABLE_IMPL
 template<class T>
-[[noreturn]]
+NORETURN
 constexpr T unreachable_impl(const char* file, unsigned int line, const char* func) {
 	std::cerr << "[Fatal Error] unreachable reached\n";
 	std::cerr << "\t in file " << file << ':' << line << '\n';
@@ -16,7 +18,8 @@ constexpr T unreachable_impl(const char* file, unsigned int line, const char* fu
 	std::exit(static_cast<int>(0xDEADC0DE));
 }
 #else
-[[noreturn]]
+
+NORETURN
 template<class T>
 constexpr T unreachable_impl(const char* file, unsigned int line, const char* func) {
 	return T{};
