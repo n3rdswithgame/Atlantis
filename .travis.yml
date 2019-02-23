@@ -42,7 +42,7 @@ matrix:
       script:
         #have to export these here instead of an env section as travis will overwrite them
         - export CC=clang
-        - export CXX=clang++ -stdlib=libc++ 
+        - export CXX="clang++ --stdlib=libc++ "
 
         - cmake .
         - cmake --build . -- -j2
