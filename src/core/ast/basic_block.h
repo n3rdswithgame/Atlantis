@@ -13,7 +13,7 @@
 namespace ast::bb {
 
 	template<emu_targets target>
-	struct bb_t {
+	struct basicblock_t {
 		using ins_t = typename emu_traits<target>::ins_t;
 		using isa_t = typename emu_traits<target>::isa_t;
 
@@ -22,11 +22,11 @@ namespace ast::bb {
 		addr_t 				begin_addr;	//raw address, so for arm/thumb don't use 1 bit as T flag
 		addr_t 				end_addr;
 
-		bb_t() = default;
-		bb_t(addr_t start, addr_t end) : begin_addr(start), end_addr(end) {}
-		bb_t(const bb_t&) = default;
-		bb_t(bb_t&&) = default;
-		~bb_t() = default;
+		basicblock_t() = default;
+		basicblock_t(addr_t start, addr_t end) : begin_addr(start), end_addr(end) {}
+		basicblock_t(const basicblock_t&) = default;
+		basicblock_t(basicblock_t&&) = default;
+		~basicblock_t() = default;
 
 		bool contains (addr_t addr){
 			return begin_addr <= addr && addr <= end_addr;
@@ -54,7 +54,7 @@ namespace ast::bb {
 		using ins_t = typename emu_traits<target>::ins_t;
 		using isa_t = typename emu_traits<target>::isa_t;
 
-		using bb_t = bb_t<target>;
+		using bb_t = basicblock_t<target>;
 
 		bb_t bb;
 		status bb_status = status::empty;
