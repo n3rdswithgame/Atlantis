@@ -19,7 +19,7 @@ namespace ast {
 		using isa_t = typename emu_traits<target>::isa_t;
 
 
-		using bb = typename bb::template bb_t<target>;
+		using bb = typename bb::template basicblock_t<target>;
 		using tracker = typename bb::template tracker_t<target>;
 		
 	private:
