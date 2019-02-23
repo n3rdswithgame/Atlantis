@@ -6,10 +6,8 @@ matrix:
     dist: linux
     addons:
       apt:
-        sources:
-          - ubuntu-toolchain-r-test
-        packages:
-          - g++-8
+        sources: ['ubuntu-toolchain-r-test']
+        packages: ['g++-8']
     env: 
 
     script:
