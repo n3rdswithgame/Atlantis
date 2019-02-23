@@ -9,75 +9,96 @@ matrix:
   include:
 
     #linux gcc-8
-#    - os: linux
-#      dist: xenial 
-#      addons:
-#        apt:
-#          sources:
-#            - ubuntu-toolchain-r-test
-#          packages:
-#            - gcc-8
-#            - g++-8
-#      compiler: gcc-8
-#
-#      script:
-#        #have to export these here instead of an env section as travis will overwrite them
-#        - export CC=gcc-8
-#        - export CXX=g++-8
-#
-#        - cmake .
-#        - cmake --build . -- -j2
-#        - ctest -j2
-# 
-#    #linux clang-7
-#    - os: linux
-#      dist: xenial
-#      addons:
-#        apt:
-#          sources:
-#            - ubuntu-toolchain-r-test
-#          packages:
-#            - libstdc++-8-dev
-#      compiler: clang-7
-#
-#      script:
-#        #technically not needed but nice for consistancy with the gcc ones
-#        - export CC=clang
-#        - export CXX=clang++
-#
-#        - cmake .
-#        - cmake --build . -- -j2
-#        - ctest -j2
-
-    #osx clang
-    - os: osx
+    - os: linux
+      dist: xenial 
       addons:
-        homebrew:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
           packages:
-            - cmake
+            - gcc-8
+            - g++-8
+      compiler: gcc-8
+
       script:
-        - cmake --version
+        #have to export these here instead of an env section as travis will overwrite them
+        - export CC=gcc-8
+        - export CXX=g++-8
+
+        - cmake .
+        - cmake --build . -- -j2
+        - ctest -j2
+ 
+    #linux clang-7
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - libstdc++-8-dev
+      compiler: clang-7
+
+      script:
+        #technically not needed but nice for consistancy with the gcc ones
+        - export CC=clang
+        - export CXX=clang++
+
         - cmake .
         - cmake --build . -- -j2
         - ctest -j2
 
-    #linux gcc-7
-#    - os: linux
-#      dist: xenial 
-#      addons:
-#        apt:
-#          sources:
-#            - ubuntu-toolchain-r-test
-#          packages:
-#            - gcc-7
-#            - g++-7
-#      compiler: gcc-7
-#
+#osx will be disabled until either cmake is updated on travis
+#or it until I decide to lower the requierd cmake version by 
+#making it cmake 3.11 complient
+#    #osx clang
+#    - os: osx
 #      script:
-#        #have to export these here instead of an env section as travis will overwrite them
-#        - export CC=gcc-7
-#        - export CXX=g++-7
-#  
+#        - cmake --version
 #        - cmake .
 #        - cmake --build . -- -j2
 #        - ctest -j2
+
+    #linux gcc-7
+    - os: linux
+      dist: xenial 
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-7
+            - g++-7
+      compiler: gcc-7
+
+      script:
+        #have to export these here instead of an env section as travis will overwrite them
+        - export CC=gcc-7
+        - export CXX=g++-7
+  
+        - cmake .
+        - cmake --build . -- -j2
+        - ctest -j2
+
+    #linux clang-6
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - libstdc++-8-dev
+            - clang-6.0
+      compiler: clang-6
+
+      script:
+        #technically not needed but nice for consistancy with the gcc ones
+        - export CC=clang-6.0
+        - export CXX=clang++-6.0
+
+        - cmake .
+        - cmake --build . -- -j2
+        - ctest -j2
