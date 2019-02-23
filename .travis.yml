@@ -22,3 +22,17 @@ matrix:
       - cmake .
       - cmake --build . -- -j2
       - ctest -j2
+
+    #linux clang-7
+    os: linux
+    dist: xenial
+    #clang 7 already installed so no addons
+
+    script:
+      #have to export these here instead of an env section as travis will overwrite them
+      - export CC=clang
+      - export CXX=clang++
+
+      - cmake .
+      - cmake --build . -- -j2
+      - ctest -j2
