@@ -51,6 +51,10 @@ matrix:
 
     #osx clang
     - os: osx
+      addons:
+        homebrew:
+          packages:
+            - cmake
       script:
         - cmake --version
         - cmake .
