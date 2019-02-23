@@ -13,6 +13,6 @@ matrix:
     env: CC=gcc-8 CXX=g++8
 
     script:
-      - cmake
+      - cmake .
       - cmake --build . -- -j2
       - ctest -j2
