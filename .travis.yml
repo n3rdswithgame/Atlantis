@@ -1,6 +1,9 @@
 language: cpp
 
-
+#ignore the commits while I setup 
+branches:
+  except:
+    -appveyor_setup
 
 matrix:
   include:
@@ -42,6 +45,13 @@ matrix:
         - export CC=clang
         - export CXX=clang++
 
+        - cmake .
+        - cmake --build . -- -j2
+        - ctest -j2
+
+    #osx clang
+    - os: osx
+      script:
         - cmake .
         - cmake --build . -- -j2
         - ctest -j2
