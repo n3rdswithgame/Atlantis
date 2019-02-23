@@ -4,7 +4,6 @@
 #include "cpu.h"
 
 #include "common/logger.h"
-#include "common/small_vec.h"
 
 #include <iostream>
 #include <string>
