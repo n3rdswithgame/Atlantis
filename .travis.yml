@@ -31,18 +31,18 @@ matrix:
 
     - os: linux
       dist: xenial
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - libstdc++-8-dev
+      #addons:
+      #  apt:
+      #    sources:
+      #      - ubuntu-toolchain-r-test
+      #    packages:
+      #      - libstdc++-8-dev
       compiler: clang-7
 
       script:
         #have to export these here instead of an env section as travis will overwrite them
         - export CC=clang
-        - export CXX=clang++
+        - export CXX=clang++ -stdlib=libc++ 
 
         - cmake .
         - cmake --build . -- -j2
