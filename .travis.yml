@@ -27,8 +27,6 @@ matrix:
         - ctest -j2
   
     #linux clang-7
-    #clang 7 already installed so no addons
-
     - os: linux
       dist: xenial
       addons:
@@ -40,10 +38,31 @@ matrix:
       compiler: clang-7
 
       script:
-        #have to export these here instead of an env section as travis will overwrite them
+        #technically not needed but nice for consistancy with the gcc ones
         - export CC=clang
         - export CXX=clang++
 
+        - cmake .
+        - cmake --build . -- -j2
+        - ctest -j2
+
+    #linux gcc-7
+    - os: linux
+      dist: xenial 
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-7
+            - g++-7
+      compiler: gcc-7
+
+      script:
+        #have to export these here instead of an env section as travis will overwrite them
+        - export CC=gcc-7
+        - export CXX=g++-7
+  
         - cmake .
         - cmake --build . -- -j2
         - ctest -j2
