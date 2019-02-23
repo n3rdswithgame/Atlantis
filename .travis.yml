@@ -3,11 +3,14 @@ matrix:
   include:
 
     #linux gcc-8
-    dist: linux
+    os: linux
+    dist: xenial
     addons:
       apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: ['g++-8']
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-8
     env: 
 
     script:
