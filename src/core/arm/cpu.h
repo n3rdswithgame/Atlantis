@@ -345,8 +345,25 @@ namespace arm::cpu {
 		mode_t current_mode = sys;
 		u64 cycle = 0;
 
-		reg_t& operator[](reg r) {
-			return gpr[unbankReg(current_mode, r)];
+		gpr_t unbank(reg r) const{
+			return unbankReg(current_mode, r);
+		}
+
+		reg_t& operator[](reg r){
+			return gpr[unbank(r)];
+		}
+
+		//potentially need to add 8 here
+		//need to see how this plays out
+		//with the rest of the emulation
+		addr_t getFetchAddr() const {
+			addr_t exec = getExecAddr();
+			return exec;
+		}
+
+		addr_t getExecAddr() const {
+			addr_t exec = static_cast<addr_t>(gpr[unbank(reg::pc)]);
+			return exec;
 		}
 	};
 }
