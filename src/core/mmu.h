@@ -69,10 +69,11 @@ namespace mmu {
 	private:
 		template<typename T, mem::memop op>
 		constexpr auto memop_impl(addr_t addr, T write_val=0)
-		-> typename ::mem::memop_traits<T,op>::ret_val
+			-> typename ::mem::memop_traits<T,op>::ret_val
 		{
 			typename ::mem::memop_traits<T,op>::ret_val ret;
 			ret.status = mem::error::success;
+			constexpr bool isRead = op == mem::memop::read;
 
 			//TODO: allow for unaligned access at this level and let a higher level keep / discard
 			//the unalighed access
@@ -85,7 +86,7 @@ namespace mmu {
 			std::optional<mem::region_t> region_opt = addr_to_region(addr);
 
 			if(!region_opt) {
-				WARNING("Attempt to {} to/from unmapped address {:x}", op, addr);
+				WARNING("Attempt to {} {} unmapped address {:x}", op, isRead ? "from" : "to" , addr);
 				ret.status |= mem::error::unmapped;
 				return ret;
 			}
@@ -95,7 +96,7 @@ namespace mmu {
 			ptr<u8> backing = region.mem;
 			addr_t off = addr - region.start;
 	
-			if constexpr(op == mem::memop::read) {
+			if constexpr(isRead) {
 				//reusing write_val as a temporary to use an otherwise 
 				//unused paramater and silence the warning
 				write_val = 0; //probalby 0 anyway but just ensuring
