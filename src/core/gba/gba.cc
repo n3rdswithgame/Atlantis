@@ -4,6 +4,7 @@
 
 namespace gba {
 	gba::gba(std::string& rom_name):
+		clock(0),	
 		mmu(::gba::mem::map),
 		rom(rom_name)
 	{

@@ -4,6 +4,7 @@
 #include "mbc.h"
 #include "memmap.h"
 #include "rom.h"
+#include "types.h"
 
 #include <string>
 
@@ -20,6 +21,10 @@
 
 namespace gba {
 	class gba {
+		//each chip that has its own timer, but this is the common clock that counts
+		//how much has been emulated so far
+		emu_traits::tick_t clock;
+
 		arm::cpu::state cpu;
 		mmu::mmu<::gba::mem::region> mmu;
 		rom::rom rom;
