@@ -841,7 +841,7 @@ op	: {}
 
 		//printInst(decoded);	
 
-		Log::Logger::get().flush();	
+		//Log::Logger::get().flush();	
 
 		return decoded;
 	}
