@@ -1,11 +1,12 @@
 #ifndef DISPATCHER_H
 #define DISPATCHER_H
 
-#include "ast.h"
+#include "basic_block.h"
+#include "types.h"
 
 #include <algorithm>
 #include <chrono>
-#include <unordered_map>
+#include <map>
 
 #include "common/logger.h"
 #include "common/types.h"
@@ -23,8 +24,9 @@ namespace ast {
 		using tracker = typename bb::template tracker_t<target>;
 		
 	private:
-		using dispatcher_type = std::unordered_map<addr_t, tracker>;
-		dispatcher_type dispatch;
+		//PERF: perf if ordered vs unordered map vs some library hash map is best
+		using map_t = std::map<addr_t, tracker>;
+		map_t dispatch;
 		tracker dummy;//In the exceptional event that a tracker fails to alloc, retrun something that isn't dangling
 
 	public:
