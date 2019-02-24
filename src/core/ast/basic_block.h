@@ -45,8 +45,8 @@ namespace ast::bb {
 		empty,
 		building,
 		built,
-		optimized,
-		jited
+		optimized,	//TODO: adding these here for now, but will work on this later
+		jited		//TODO: adding these here for now, but will work on this later
 	};
 
 	template<emu_targets target>
