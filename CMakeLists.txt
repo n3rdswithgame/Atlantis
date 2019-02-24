@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 project(Atlantis)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(BUILD_DIR ${PROJECT_BINARY_DIR})
 set(LIB_DIR lib)
