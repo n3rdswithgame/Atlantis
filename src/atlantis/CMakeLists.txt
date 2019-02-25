@@ -1,5 +1,9 @@
 add_executable(atlantis
+	cli.h
+
 	main.cc
+
+	ver.h
 )
 
 target_link_libraries(atlantis PUBLIC capstone clara)

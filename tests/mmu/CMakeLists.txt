@@ -3,6 +3,7 @@
 add_executable(mmu_tests
 	mmu_access.cc
 	mmu_test.cc
+	moc.h
 )
 
 target_link_libraries(mmu_tests PRIVATE testing)

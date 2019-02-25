@@ -2,8 +2,11 @@
 
 add_executable(arm_tests
 	arm_test.cc
+
 	lift_arm.cc
 	lift_thumb.cc
+
+	moc.h
 )
 
 target_link_libraries(arm_tests PRIVATE testing)

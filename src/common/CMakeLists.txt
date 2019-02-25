@@ -3,6 +3,19 @@ add_library(common STATIC
 
 	endian.h
 
+	file.h
+
+	singleton.h
+
+	small_vec.h
+
+	tuple.h
+
+	types.h
+
+	unreachable.h
+
+	bit/mask.h
 
 	logger.h
 	logger/event.h
@@ -11,16 +24,12 @@ add_library(common STATIC
 	logger/logger.h
 	logger/logger.cc
 	logger/sink.h
-	logger/sinks/format.h
-	logger/sinks/format.cc
 	logger/sinks/console.h
 	logger/sinks/console.cc
+	logger/sinks/format.h
+	logger/sinks/format.cc
 
-	singleton.h
 
-	types.h
-
-	unreachable.h
 )
 
 target_link_libraries(common PUBLIC fmt rang-format)
