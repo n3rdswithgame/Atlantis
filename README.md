@@ -1,15 +1,14 @@
-
 # Atlantis
 
 This is a emulator for the GameBoy Advance.
 
 -----
 
-##### Develop branch build status: 
-[![Build Status](https://travis-ci.org/n3rdswithgame/Atlantis.svg?branch=develop)](https://travis-ci.org/n3rdswithgame/Atlantis)
-[![Build status](https://ci.appveyor.com/api/projects/status/dbm877lh1ywhudhc/branch/develop?svg=true)](https://ci.appveyor.com/project/n3rdswithgame/atlantis/branch/develop)
+[![Build Status](https://travis-ci.org/n3rdswithgame/Atlantis.svg?branch=develop)](https://travis-ci.org/n3rdswithgame/Atlantis)[![Build status](https://ci.appveyor.com/api/projects/status/dbm877lh1ywhudhc/branch/develop?svg=true)](https://ci.appveyor.com/project/n3rdswithgame/atlantis/branch/develop)
 
 -----
+
+## About
 
 ### Why call it Atlantis
 There is a rumor going around online that the codename for the GBA was Atlantis, and I am a fan of the Stargate franchise, so the name kinda seemed like a good idea.
