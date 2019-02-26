@@ -1,5 +1,5 @@
-#ifndef ARM_LIFTER_H
-#define ARM_LIFTER_H
+#ifndef ARM_DECODER_H
+#define ARM_DECODER_H
 
 #include "cpu.h"
 #include "ins.h"
@@ -24,13 +24,13 @@ namespace arm {
 	//forward declare this for the lfiter check
 	struct emu_traits;
 
-	//these will be instantiated in lifter.cc
+	//these will be instantiated in decoder.cc
 	//extern template ins_t decode<isa::arm>(cs_insn*);
 	//extern template ins_t decode<isa::thumb>(cs_insn*);
 	
 
 	template<emu_targets target>
-	class Lifter : public ast::Lifter<Lifter<target>, target> {
+	class Decoder : public ast::Decoder<Decoder<target>, target> {
 
 
 		using emu_traits = typename ast::emu_traits<target>;
@@ -40,11 +40,11 @@ namespace arm {
 				arm::emu_traits,
 				emu_traits
 			>,
-		"attempting to use the arm lifter with a non arm target");
+		"attempting to use the arm decoder with a non arm target");
 
-		friend class ast::Lifter<Lifter<target>, target>;
+		friend class ast::Decoder<Decoder<target>, target>;
 
-		using ast_Lifter = ast::Lifter<Lifter<target>, target>;
+		using ast_Decoder = ast::Decoder<Decoder<target>, target>;
 		
 		using mmu_t = typename emu_traits::mmu_t;
 
@@ -55,7 +55,7 @@ namespace arm {
 
 
 	public:
-		Lifter(mmu_t &m) : ast_Lifter(m) {
+		Decoder(mmu_t &m) : ast_Decoder(m) {
 			if(cs_err ret = cs_open(CS_ARCH_ARM, CS_MODE_ARM, &cap_arm);
 				ret != CS_ERR_OK) {
 				FATAL("Error creating ARM capstone engine with error code: {}", ret);
@@ -68,13 +68,13 @@ namespace arm {
 			cs_option(cap_thumb, CS_OPT_DETAIL, CS_OPT_ON);
 		}
 
-		Lifter(Lifter&& l) {
+		Decoder(Decoder&& l) {
 			cap_arm   = l.cap_arm;
 			cap_thumb = l.cap_thumb;
 		}
 
-		~Lifter() {
-			if(ast_Lifter::isValid()) {
+		~Decoder() {
+			if(ast_Decoder::isValid()) {
 				cs_close(&cap_arm);
 				cs_close(&cap_thumb);
 			}
@@ -107,14 +107,14 @@ namespace arm {
 	
 			u32 raw_machine_code; //for the log message
 			if constexpr(is_arm) {
-				u32 machine_code = ast_Lifter::template mmuFetch<u32>(addr).read_val;//no static_cast as read_val is already a reg_t aka u32
+				u32 machine_code = ast_Decoder::template mmuFetch<u32>(addr).read_val;//no static_cast as read_val is already a reg_t aka u32
 				raw_machine_code = machine_code;
 				count = cs_disasm(cap_arm, reinterpret_cast<u8*>(&machine_code),
 					sizeof(machine_code), addr, num_inst, &insn);
 			} else {
 				addr |= 1;// to ensure that the instructions will diassemble correctly 
 				//for any pc relative op, like a str/ldm rel pc, or branch rel imm
-				u16 machine_code = static_cast<u16>(ast_Lifter::template mmuFetch<u16>(addr).read_val);
+				u16 machine_code = static_cast<u16>(ast_Decoder::template mmuFetch<u16>(addr).read_val);
 				raw_machine_code = machine_code;
 				count = cs_disasm(cap_thumb, reinterpret_cast<u8*>(&machine_code),
 					sizeof(machine_code), addr, num_inst, &insn);
@@ -140,4 +140,4 @@ namespace arm {
 	};
 } //namespace arm
 
-#endif //ARM_LIFTER_H
+#endif //ARM_DECODER_H

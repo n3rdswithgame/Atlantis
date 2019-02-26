@@ -4,14 +4,14 @@ add_library(core STATIC
 	arm/cpu.h
 	arm/cpu.cc
 	arm/ins.h
-	arm/lifter.h
-	arm/lifter.cc
+	arm/decoder.h
+	arm/decoder.cc
 
 	ast/ast.h
 	ast/basic_block.h
 	ast/dispatcher.h
 	ast/executor.h
-	ast/lifter.h
+	ast/decoder.h
 	ast/types.h
 
 	gba/gba.h

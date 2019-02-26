@@ -5,7 +5,7 @@
 
 #include "cpu.h"
 #include "ins.h"
-#include "lifter.h"
+#include "decoder.h"
 
 namespace arm {
 	struct emu_traits {

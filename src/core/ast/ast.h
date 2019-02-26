@@ -3,6 +3,6 @@
 
 #include "basic_block.h"
 #include "dispatcher.h"
-#include "lifter.h"
+#include "decoder.h"
 
 #endif //AST_H

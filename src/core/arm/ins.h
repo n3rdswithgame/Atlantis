@@ -38,7 +38,7 @@ namespace arm {
 		al = bit_range<0b1110, 31, 28>::m, // Always (unconditional) 				always
 
 		// the invalid conditional is only used on instructions that can't be conditional,
-		// so in the lifter those will just be tagged as AL
+		// so in the decoder those will just be tagged as AL
 
 		hs = cs,
 		lo = cc,

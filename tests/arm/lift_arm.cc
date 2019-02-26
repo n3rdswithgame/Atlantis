@@ -7,7 +7,7 @@
 #include "common/logger.h"
 
 #include "core/arm/arm.h"
-#include "core/arm/lifter.h"
+#include "core/arm/decoder.h"
 #include "core/mem.h"
 #include "core/mmu.h"
 
@@ -37,7 +37,7 @@ std::array<arm::ins_t, sizeof...(RawIns)> Setup(moc_arm region, RawIns... rawIns
 
 	mem::map<moc_arm> memmap = genMemMap();
 	mmu::mmu<moc_arm> mmu(memmap);
-	arm::Lifter<emu_targets::arm_moc> lift(mmu);
+	arm::Decoder<emu_targets::arm_moc> lift(mmu);
 
 	mem::region_t& r = mmu[region];
 	//this is fine as the values will first be written to below in the mmu.write<u32> method call

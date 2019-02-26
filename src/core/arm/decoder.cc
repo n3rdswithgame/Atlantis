@@ -1,4 +1,4 @@
-#include "lifter.h"
+#include "decoder.h"
 
 #include "arm.h"
 #include "cpu.h"

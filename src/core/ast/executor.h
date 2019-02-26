@@ -12,26 +12,26 @@ namespace ast {
 
 		using emu_traits = typename ast::emu_traits<target>;
 		using cpu_t = typename emu_traits::cpu_t;
-		using lifter_t = Lifter<target>;
+		using decoder_t = Decoder<target>;
 		using dispatch_t = Dispatch<target>;
 		using bb_t = typename dispatch_t::bb;
 
 		cpu_t cpu;
-		lifter_t lifter;
+		decoder_t decoder;
 		dispatch_t dispatch;
 		non_owning<bb_t> activeBB = nullptr;
 
 	public:
 		template<typename Mmu>
-		Executor(Mmu* mmu) : cpu(), lifter(mmu) {
+		Executor(Mmu* mmu) : cpu(), decoder(mmu) {
 		}
 
 		cpu_t& getCpu() {
 			return cpu;
 		}
 
-		lifter_t& lifter() {
-			return lifter;
+		decoder_t& decoder() {
+			return decoder;
 		}
 
 		void execOneIns() {

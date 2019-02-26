@@ -1,17 +1,18 @@
-#ifndef LIFTER_H
-#define LIFTER_H
+#ifndef AST_DECODER_H
+#define AST_DECODER_H
 
 #include <algorithm>
 
 #include "common/types.h"
+#include "core/ast/types.h"
 #include "core/mem.h"
-
 
 //"Concept":
 
 namespace ast {
+
 	template<class CRTP, emu_targets target>
-	class Lifter {
+	class Decoder {
 	#define crtp (static_cast<CRTP*>(this))
 
 		using emu_traits = typename ast::emu_traits<target>;
@@ -25,8 +26,8 @@ namespace ast {
 		using isa_t = typename emu_traits::isa_t;
 		using mmu_t = typename emu_traits::mmu_t;
 
-		Lifter(mmu_t& m) : mmu(&m) {}
-		Lifter(Lifter&& l) {
+		Decoder(mmu_t& m) : mmu(&m) {}
+		Decoder(Decoder&& l) {
 			mmu = std::exchange(l.mmu, nullptr);
 		}
 
@@ -47,4 +48,4 @@ namespace ast {
 	};
 } //namespace ast
 
-#endif //LIFTER_H
+#endif //AST_DECODER_H
