@@ -51,3 +51,6 @@ SourceTrail/
 *.exe
 *.out
 *.app
+*.sublime-workspace
+
+Atlantis\.sublime-project
